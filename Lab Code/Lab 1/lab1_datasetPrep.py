@@ -28,8 +28,11 @@ if labelColumns == 'y' or labelColumns == 'Y' or labelColumns == 'Yes' or labelC
         val = input("Name of Column " + str(x) + ":\n")
         labels.append(val)
     df.columns = labels
+    
 elif labelColumns == 'n' or labelColumns == 'N':
     df = df.add_prefix('X')
+
+#Speical Case for robot data set to quickly name the 91 columns
 elif labelColumns == "robotFailures" or labelColumns == "robotfailures" or labelColumns == "robot":
     robotNames = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\OG Datasets\Robot Execution Failures Data Set\robotName.csv"
     df2 = pd.read_csv(robotNames, header=None, index_col=False)
