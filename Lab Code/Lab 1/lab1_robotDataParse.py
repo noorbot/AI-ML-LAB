@@ -1,7 +1,7 @@
 import pandas as pd
 
 #Get path to dataset file
-inputData = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\ENGR 3150U Data Sets\Robot Execution Failures Data Set\lp1.csv"
+inputData = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\OG Datasets\Robot Execution Failures Data Set\lp5.csv"
 
 #Create inital variables for parser
 counter = 0
@@ -39,4 +39,5 @@ for x in df_dict:
 print(df2)
 
 #Export reformated data
-df2.to_csv(r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\ENGR 3150U Data Sets\Robot Execution Failures Data Set\lp1-formatted.csv", header=False, index = False)
+exportName = inputData.split(".", 1)[0]
+df2.to_csv(exportName + "-formatted.csv", header=False, index = False)
