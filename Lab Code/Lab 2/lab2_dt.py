@@ -17,6 +17,7 @@ def entropyAtt(df, attribute, targetVariable):
         for attVal in attColValues:
             df2 = df[df[attribute]==attVal][df[targetVariable]==targetVal]
             print(df2[attribute])
+            print(len(df2))
 
 
 
