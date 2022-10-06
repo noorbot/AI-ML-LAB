@@ -1,3 +1,4 @@
+from re import sub
 import pandas as pd
 import numpy as np
 
@@ -20,21 +21,22 @@ def entropyAtt(df, attribute, targetVariable):
     attCol = df.loc[:, attribute]
     attColValues = attCol.unique()
     weightedFrac = 0
+    entropyTotal = 0
 
-
-    
 
     for attVal in attColValues:
-        print("For " + attVal + "Samples: \n")
+        #print("For " + attVal + "Samples: \n")
 
         subdf = df[[attribute, targetVariable]]
         svSamples = subdf[subdf[attribute]==attVal]
+        
+        weightedFrac = len(svSamples)/len(subdf)
 
-        print(entropyCalc(svSamples, targetVariable))
-        print(svSamples)
+        entropyTotal += (-1)*weightedFrac*(entropyCalc(svSamples, targetVariable))
 
-        print(len(svSamples))
-        print(len(subdf))
+    print(entropyTotal)
+
+
 
 
 
