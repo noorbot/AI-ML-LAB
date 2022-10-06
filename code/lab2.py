@@ -99,12 +99,19 @@ for attribute in range(0, num_attributes):                 # for each attribute 
 
     print('num attributes: ' + str(num_attributes) + '    num classes:' + str(num_attribute_classes))
 
-    for clas, i in zip(attribute_classes, range(0,num_attribute_classes)):                 # for each attribute ...
+    for clas, i in zip(attribute_classes, range(0,num_attribute_classes)):                 # for each target class ...
         print(Attribute_Entropies.iloc[prev_num_attribute_classes + i , -1])
         IG = IG - (Attribute_Entropies.iloc[prev_num_attribute_classes + i , 2] / num_instances) * (Attribute_Entropies.iloc[prev_num_attribute_classes + i , -1])
         Attribute_IG.iloc[attribute, -1] = IG
-        #print(IG)
 
     prev_num_attribute_classes = num_attribute_classes
 
 print(Attribute_IG)
+
+# pick attribute with highest information gain as stump
+stump = Attribute_IG[Attribute_IG.iloc[1, :] == Attribute_IG.iloc[1, :].max()].iloc[0,0]
+print('Stump attribute index: ' + str(stump))
+
+# split the data by the classes fo the chosen stump
+# then would need to check for homo (unique) to decide if its a leaf or if need to continue branching (repeat process)
+data_1 = data[data.iloc[:, ]]
