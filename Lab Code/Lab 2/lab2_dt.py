@@ -1,5 +1,4 @@
-from cgi import test
-from re import sub
+from xml.etree.ElementPath import find
 import pandas as pd
 import numpy as np
 
@@ -15,24 +14,17 @@ def entropyCalc(dataframe, column):
     
     return entropy
 
-
 def entropyAtt(df, attribute, targetVariable):
     targetCol = df.loc[: , targetVariable]
-    targetColValues = targetCol.unique()
     attCol = df.loc[:, attribute]
     attColValues = attCol.unique()
     weightedFrac = 0
     entropyTotal = 0
 
-
     for attVal in attColValues:
-        #print("For " + attVal + "Samples: \n")
-
         subdf = df[[attribute, targetVariable]]
         svSamples = subdf[subdf[attribute]==attVal]
-        
         weightedFrac = len(svSamples)/len(subdf)
-
         entropyTotal += (-1)*weightedFrac*(entropyCalc(svSamples, targetVariable))
 
     return entropyTotal
@@ -40,27 +32,9 @@ def entropyAtt(df, attribute, targetVariable):
 def infoGain (entS, entSVTot):
     return entS + entSVTot
 
-
-
-        # for targetVal in targetColValues:
-        #     svSamples = df[df[attribute]==attVal][df[targetVariable]==targetVal]
-        #     print(svSamples[attribute])
-        #     print(len(svSamples))
-        #     sv = df[df[attribute]==attVal]
-        #     print(len(sv))
-        #     print(sv)
-        #     weightedFrac = 
-        #     print(entropyCalc(columnsNamesArr[-1]))
-
-
-            
-
-
-
-
-
-
-
+def findWinner(list):
+    attributeWin = max(list, key=list.get)
+    return attributeWin
 
 inputData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\breast-cancer-wisconsin-wLabels-train.csv"
 inputData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\letter-recognition-wLabels-train.csv"
@@ -78,37 +52,22 @@ userDataPath = lecData
 df = pd.read_csv(userDataPath)
 
 columnsNamesArr = df.columns.values
-#Test Calculation For Entropy
+
 #Finding the Entropy of Target Variable
-
-entropyTV = 0
-# targetCol = df.iloc[: , -1]
-# print(targetCol.unique())
-# instances = targetCol.value_counts()
-
-# for x in instances:
-#     pi = x / len(targetCol)
-#     entropyTV += -pi*np.log2(pi)
-
-targetCol = df.loc[: , columnsNamesArr[-1]]
-instances = targetCol.value_counts()
-
-for x in instances:
-    pi = x / len(targetCol)
-    entropyTV += -pi*np.log2(pi)
-print(entropyTV)
-
-# for column in range(df.shape[1] -1):
-#     colTest = df.iloc[:,column]
-#     print(colTest)
-
 entropyS = entropyCalc(df, columnsNamesArr[-1])
-igDF = {}
+igStump = {}
 
 for column in columnsNamesArr[:-1]:
     testEnt = entropyAtt(df, column , columnsNamesArr[-1])
-    #igArray = infoGain(entropyS, testEnt)
-    igDF.update({column:infoGain(entropyS, testEnt)})
-    #igArray.append()
+    igStump.update({column:infoGain(entropyS, testEnt)})
 
-print(igDF)
+stump = findWinner(igStump)
+#Get uniques of winner attribute
+stumpCol = df.loc[:, stump]
+stumpColValues = stumpCol.unique()
+
+print(stumpColValues)
+
+for value in stumpColValues:
+    dfTEST = df[df[stump]==value]
+    print(dfTEST)
