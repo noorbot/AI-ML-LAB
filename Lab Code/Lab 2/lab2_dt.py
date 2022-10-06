@@ -27,15 +27,16 @@ def entropyAtt(df, attribute, targetVariable):
     # print(df2[attribute])
 
     #Need To Calculate Entropy of An Atrribute with the collection of samples that match target variable
-    for targetVal in targetColValues:
-        print("For " + targetVal + "Samples: \n")
-        for attVal in attColValues:
-            # df2 = df[df[attribute]==attVal][df[targetVariable]==targetVal]
+    for attVal in attColValues:
+        print("For " + attVal + "Samples: \n")
+        for targetVal in targetColValues:
+            df2 = df[df[attribute]==attVal][df[targetVariable]==targetVal]
             # print(df2[attribute])
-            # print(len(df2))
+            print(len(df2))
             df3 = df[df[attribute]==attVal]
-            # print(len(df3))
-            # print(df3)
+            print(len(df3))
+            print(df3)
+            # print(entropyCalc(columnsNamesArr[-1]))
 
 
 
@@ -79,8 +80,6 @@ for x in instances:
     pi = x / len(targetCol)
     entropyTV += -pi*np.log2(pi)
 print(entropyTV)
-
-print(entropyCalc(columnsNamesArr[-1]))
 
 # for column in range(df.shape[1] -1):
 #     colTest = df.iloc[:,column]
