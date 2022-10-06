@@ -70,4 +70,9 @@ print(stumpColValues)
 
 for value in stumpColValues:
     dfTEST = df[df[stump]==value]
-    print(dfTEST)
+
+
+dfTEST = df[df[stump]=='Overcast']
+entropyStump = entropyCalc(dfTEST, columnsNamesArr[-1])
+print(dfTEST)
+print(entropyStump)
