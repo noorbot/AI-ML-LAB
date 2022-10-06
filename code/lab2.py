@@ -119,21 +119,16 @@ print('\nStump classes: ' + str(stump_attribute_classes))
 num_stump_attribute_classes = np.count_nonzero(stump_attribute_classes)
 print('Num Stump classes: ' + str(num_stump_attribute_classes))
 
-#data_dict = {elem : pd.DataFrame() for elem in stump_attribute_classes}
-
-# for stump_class in stump_attribute_classes:
-#     #Dynamically create Data frames
-#     vars()[stump_class] = pd.DataFrame()
-# print(vars())
-
-d = {}
+data_split = {}
 for stump_class_attribute, stump_class_num in zip(stump_attribute_classes ,range(0,num_stump_attribute_classes)):      # make a new datasets by splitting by stump attribute classes
-    #d[stump_class] = pd.DataFrame
-    d[stump_class_num] = data[data.iloc[:, stump_col]== stump_class_attribute].copy()
-    print(d[stump_class_num])
+    data_split[stump_class_num] = data[data.iloc[:, stump_col]== stump_class_attribute].copy()
+    print(data_split[stump_class_num])
+    #print((data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all() )
+    if (data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all(): 
+        print('homogenous')
+    else: 
+        print('not homogenous')
 
 
-
-# for stump_attribute_classes in range(0,num_stump_attribute_classes):    
-#     data_'stump' = pd.DataFrame(index=np.arange(0), columns=np.arange(4 + num_target_classes))
-#     data_'stump' = data[data.iloc[:, stump]== attr1]
+# if the split is homogenous, we have a leaf! all done
+# otherwise, we need to choose another node (stump)
