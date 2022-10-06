@@ -1,9 +1,9 @@
-from tkinter.tix import COLUMN
 import pandas as pd
 import numpy as np
 
-def entropyCalc(column):
+def entropyCalc(dataframe, column):
     # columnsNamesArr = df.columns.values
+    df = dataframe
     entropy = 0
 
     # targetCol = df.loc[: , columnsNamesArr[-1]]
@@ -29,14 +29,24 @@ def entropyAtt(df, attribute, targetVariable):
     #Need To Calculate Entropy of An Atrribute with the collection of samples that match target variable
     for attVal in attColValues:
         print("For " + attVal + "Samples: \n")
-        for targetVal in targetColValues:
-            df2 = df[df[attribute]==attVal][df[targetVariable]==targetVal]
-            # print(df2[attribute])
-            print(len(df2))
-            df3 = df[df[attribute]==attVal]
-            print(len(df3))
-            print(df3)
-            # print(entropyCalc(columnsNamesArr[-1]))
+
+        subdf = df[[attribute, targetVariable]]
+        svSamples = subdf[subdf[attribute]==attVal]
+
+        print(entropyCalc(svSamples, targetVariable))
+
+
+        #for targetVal in targetColValues:
+            # svSamples = df[df[attribute]==attVal][df[targetVariable]==targetVal]
+            # print(svSamples[attribute])
+            # print(len(svSamples))
+            # sv = df[df[attribute]==attVal]
+            # print(len(sv))
+            # print(sv)
+            # # print(entropyCalc(columnsNamesArr[-1]))
+
+
+            
 
 
 
