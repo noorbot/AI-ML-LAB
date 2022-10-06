@@ -102,12 +102,12 @@ print(entropyTV)
 #     colTest = df.iloc[:,column]
 #     print(colTest)
 
-#for column in columnsNamesArr[:-1]:
-
-testEnt = entropyAtt(df, "Wind", columnsNamesArr[-1])
-
 entropyS = entropyCalc(df, columnsNamesArr[-1])
+igArray = []
 
-igWind = infoGain(entropyS, testEnt)
+for column in columnsNamesArr[:-1]:
+    testEnt = entropyAtt(df, column , columnsNamesArr[-1])
+    #igArray = infoGain(entropyS, testEnt)
+    igArray.append(infoGain(entropyS, testEnt))
 
-print(igWind)
+print(igArray)
