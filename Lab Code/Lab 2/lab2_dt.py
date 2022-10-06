@@ -2,11 +2,8 @@ import pandas as pd
 import numpy as np
 
 def entropyCalc(dataframe, column):
-    # columnsNamesArr = df.columns.values
     df = dataframe
     entropy = 0
-
-    # targetCol = df.loc[: , columnsNamesArr[-1]]
     targetCol = df.loc[:, column]
     instances = targetCol.value_counts()
 
@@ -22,11 +19,11 @@ def entropyAtt(df, attribute, targetVariable):
     targetColValues = targetCol.unique()
     attCol = df.loc[:, attribute]
     attColValues = attCol.unique()
+    weightedFrac = 0
 
-    # df2 = df[df[attribute]=="Weak"][df[targetVariable]=="No"]
-    # print(df2[attribute])
 
-    #Need To Calculate Entropy of An Atrribute with the collection of samples that match target variable
+    
+
     for attVal in attColValues:
         print("For " + attVal + "Samples: \n")
 
@@ -34,16 +31,22 @@ def entropyAtt(df, attribute, targetVariable):
         svSamples = subdf[subdf[attribute]==attVal]
 
         print(entropyCalc(svSamples, targetVariable))
+        print(svSamples)
+
+        print(len(svSamples))
+        print(len(subdf))
 
 
-        #for targetVal in targetColValues:
-            # svSamples = df[df[attribute]==attVal][df[targetVariable]==targetVal]
-            # print(svSamples[attribute])
-            # print(len(svSamples))
-            # sv = df[df[attribute]==attVal]
-            # print(len(sv))
-            # print(sv)
-            # # print(entropyCalc(columnsNamesArr[-1]))
+
+        # for targetVal in targetColValues:
+        #     svSamples = df[df[attribute]==attVal][df[targetVariable]==targetVal]
+        #     print(svSamples[attribute])
+        #     print(len(svSamples))
+        #     sv = df[df[attribute]==attVal]
+        #     print(len(sv))
+        #     print(sv)
+        #     weightedFrac = 
+        #     print(entropyCalc(columnsNamesArr[-1]))
 
 
             
