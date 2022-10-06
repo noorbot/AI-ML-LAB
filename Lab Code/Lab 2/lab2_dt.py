@@ -8,13 +8,13 @@ def entropyAtt(df, attribute, targetVariable):
     attCol = df.loc[:, attribute]
     attColValues = attCol.unique()
 
-    # df2 = df[df[attribute]=="Weak"][df[targetVariable]=="No"]
-    # print(df2[attribute])
+    df2 = df[df[attribute]=="Weak"][df[targetVariable]=="No"]
+    print(df2[attribute])
 
     #Need To Calculate Entropy of An Atrribute with the collection of samples that match target variable
     for targetVal in targetColValues:
         for attVal in attColValues:
-            df2 = df[df[attribute]=="att"][df[targetVariable]=="No"]
+            df2 = df[df[attribute]==attColValues][df[targetVariable]==targetVal]
             print(df2[attribute])
 
 
