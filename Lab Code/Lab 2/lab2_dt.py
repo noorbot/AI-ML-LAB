@@ -13,6 +13,7 @@ def entropyAtt(df, attribute, targetVariable):
 
     #Need To Calculate Entropy of An Atrribute with the collection of samples that match target variable
     for targetVal in targetColValues:
+        print("For " + targetVal + "Samples: \n")
         for attVal in attColValues:
             df2 = df[df[attribute]==attVal][df[targetVariable]==targetVal]
             print(df2[attribute])
