@@ -8,7 +8,8 @@ def entropyAtt(df, attribute, targetVariable):
     attCol = df.loc[:, attribute]
     attColValues = attCol.unique()
 
-    print(df[attribute]=="Weak")
+    df2 = df[df[attribute]=="Weak"][df[targetVariable]=="No"]
+    print(df2[attribute])
 
 
 
