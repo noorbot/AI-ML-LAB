@@ -1,12 +1,12 @@
 import pandas as pd
 
 # input .csv file names
-file_name = "data/ecoli.csv"         # <-- change file name to match data set
-train_file = "results/train_data.csv"
-test_file = "results/test_data.csv"
+file_name = "data/wdbc.csv"         # <-- change file name to match data set
+train_file = "results/wdbc_train_data.csv"
+test_file = "results/wdbc_test_data.csv"
 
 # input target variable columns and test data split
-target_col = 8                               # <-- change to match index of target column
+target_col = 1                               # <-- change to match index of target column
 test_data_split = 0.2
 
 # read from data file and save to pandas DataFrame 'data'
@@ -28,3 +28,5 @@ train_data = rand_data.iloc[int(test_data_split * len_data) : len_data]
 # store data as pandas DataFrame types and save to csv files
 train_data.to_csv(train_file, index = False, header = False)
 test_data.to_csv(test_file, index = False, header = False)
+print("Train data shape: "); print(train_data.shape)
+print("Test data shape: "); print(test_data.shape)

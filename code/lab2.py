@@ -95,12 +95,15 @@ for attribute in range(0, num_attributes):                 # for each attribute 
     attribute_classes = data.iloc[:, attribute].unique()   # find unique attribute classes
     num_attribute_classes = np.count_nonzero(attribute_classes)
     Attribute_IG.loc[len(Attribute_IG), 0] = attribute
+    IG = target_entropy
 
     print('num attributes: ' + str(num_attributes) + '    num classes:' + str(num_attribute_classes))
 
     for clas, i in zip(attribute_classes, range(0,num_attribute_classes)):                 # for each attribute ...
-        IG = IG - Attribute_Entropies.iloc[prev_num_attribute_classes + i , 2] / num_instances * np.log2(Attribute_Entropies.iloc[prev_num_attribute_classes + i , 2] / num_instances)
+        print(Attribute_Entropies.iloc[prev_num_attribute_classes + i , -1])
+        IG = IG - (Attribute_Entropies.iloc[prev_num_attribute_classes + i , 2] / num_instances) * (Attribute_Entropies.iloc[prev_num_attribute_classes + i , -1])
         Attribute_IG.iloc[attribute, -1] = IG
+        #print(IG)
 
     prev_num_attribute_classes = num_attribute_classes
 
