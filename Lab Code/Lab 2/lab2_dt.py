@@ -97,4 +97,4 @@ print(entropyTV)
 
 #for column in columnsNamesArr[:-1]:
 
-entropyAtt(df, "Humidity", columnsNamesArr[-1])
+entropyAtt(df, "Wind", columnsNamesArr[-1])
