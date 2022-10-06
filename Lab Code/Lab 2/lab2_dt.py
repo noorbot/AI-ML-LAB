@@ -15,10 +15,11 @@ def entropyAtt(df, attribute, targetVariable):
     for targetVal in targetColValues:
         print("For " + targetVal + "Samples: \n")
         for attVal in attColValues:
-            df2 = df[df[attribute]==attVal][df[targetVariable]==targetVal]
-            print(df2[attribute])
-            print(len(df2))
-            df3 = df[df[targetVariable]==targetVal]
+            # df2 = df[df[attribute]==attVal][df[targetVariable]==targetVal]
+            # print(df2[attribute])
+            # print(len(df2))
+            df3 = df[df[attribute]==attVal]
+            print(len(df3))
             print(df3)
 
 
