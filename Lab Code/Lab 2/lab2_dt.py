@@ -2,6 +2,21 @@ from tkinter.tix import COLUMN
 import pandas as pd
 import numpy as np
 
+def entropyCalc(column):
+    # columnsNamesArr = df.columns.values
+    entropy = 0
+
+    # targetCol = df.loc[: , columnsNamesArr[-1]]
+    targetCol = df.loc[:, column]
+    instances = targetCol.value_counts()
+
+    for x in instances:
+        pi = x / len(targetCol)
+        entropy += -pi*np.log2(pi)
+    
+    return entropy
+
+
 def entropyAtt(df, attribute, targetVariable):
     targetCol = df.loc[: , targetVariable]
     targetColValues = targetCol.unique()
@@ -19,8 +34,8 @@ def entropyAtt(df, attribute, targetVariable):
             # print(df2[attribute])
             # print(len(df2))
             df3 = df[df[attribute]==attVal]
-            print(len(df3))
-            print(df3)
+            # print(len(df3))
+            # print(df3)
 
 
 
@@ -64,6 +79,8 @@ for x in instances:
     pi = x / len(targetCol)
     entropyTV += -pi*np.log2(pi)
 print(entropyTV)
+
+print(entropyCalc(columnsNamesArr[-1]))
 
 # for column in range(df.shape[1] -1):
 #     colTest = df.iloc[:,column]
