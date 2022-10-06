@@ -29,3 +29,7 @@ for x in instances:
     entropyTV += -pi*np.log2(pi)
 
 print(entropyTV)
+
+for column in range(df.shape[1] -1):
+    colTest = df.iloc[:,column]
+    print(colTest)
