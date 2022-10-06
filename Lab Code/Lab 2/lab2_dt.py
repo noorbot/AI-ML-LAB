@@ -103,11 +103,12 @@ print(entropyTV)
 #     print(colTest)
 
 entropyS = entropyCalc(df, columnsNamesArr[-1])
-igArray = []
+igDF = {}
 
 for column in columnsNamesArr[:-1]:
     testEnt = entropyAtt(df, column , columnsNamesArr[-1])
     #igArray = infoGain(entropyS, testEnt)
-    igArray.append(infoGain(entropyS, testEnt))
+    igDF.update({column:infoGain(entropyS, testEnt)})
+    #igArray.append()
 
-print(igArray)
+print(igDF)
