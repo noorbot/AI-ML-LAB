@@ -1,3 +1,4 @@
+from cgi import test
 from re import sub
 import pandas as pd
 import numpy as np
@@ -34,9 +35,10 @@ def entropyAtt(df, attribute, targetVariable):
 
         entropyTotal += (-1)*weightedFrac*(entropyCalc(svSamples, targetVariable))
 
-    print(entropyTotal)
+    return entropyTotal
 
-
+def infoGain (entS, entSVTot):
+    return entS + entSVTot
 
 
 
@@ -102,4 +104,10 @@ print(entropyTV)
 
 #for column in columnsNamesArr[:-1]:
 
-entropyAtt(df, "Wind", columnsNamesArr[-1])
+testEnt = entropyAtt(df, "Wind", columnsNamesArr[-1])
+
+entropyS = entropyCalc(df, columnsNamesArr[-1])
+
+igWind = infoGain(entropyS, testEnt)
+
+print(igWind)
