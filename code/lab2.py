@@ -83,6 +83,7 @@ def calc_entropies(dataset):
         prev_num_attribute_classes = num_attribute_classes
 
     print(Attribute_Entropies)
+    return Attribute_Entropies
 
 def calc_IGs(dataset, target_entropy, Attribute_Entropies):
     prev_num_attribute_classes = 0
@@ -95,26 +96,28 @@ def calc_IGs(dataset, target_entropy, Attribute_Entropies):
         num_attribute_classes = np.count_nonzero(attribute_classes)
         Attribute_IG.loc[len(Attribute_IG), 0] = attribute
         IG = target_entropy
+        print("HEY")
+        print(Attribute_Entropies)
 
         print('num attributes: ' + str(num_attributes) + '    num classes:' + str(num_attribute_classes))
 
-        for clas, i in zip(attribute_classes, range(0,num_attribute_classes)):                 # for each target class ...
-            print(Attribute_Entropies.iloc[prev_num_attribute_classes + i , -1])
+        for i in range(0,num_attribute_classes):                 # for each target class ...
             IG = IG - (Attribute_Entropies.iloc[prev_num_attribute_classes + i , 2] / num_instances) * (Attribute_Entropies.iloc[prev_num_attribute_classes + i , -1])
             Attribute_IG.iloc[attribute, -1] = IG
 
         prev_num_attribute_classes = num_attribute_classes
 
     print(Attribute_IG)
+    return Attribute_IG
 
 def find_stump(dataset):
     target_entropy = calc_target_entropy(dataset)
 
     Attribute_Entropies = pd.DataFrame(index=np.arange(0), columns=np.arange(4 + num_target_classes))
-    calc_entropies(dataset)
+    Attribute_Entropies = calc_entropies(dataset)
 
     Attribute_IG = pd.DataFrame(index=np.arange(0), columns=np.arange(2))
-    calc_IGs(dataset, target_entropy, Attribute_Entropies)
+    Attribute_IG = calc_IGs(dataset, target_entropy, Attribute_Entropies)
 
     # pick attribute with highest information gain as stump
     stump_col = Attribute_IG[Attribute_IG.iloc[1, :] == Attribute_IG.iloc[1, :].max()].iloc[0,0]
