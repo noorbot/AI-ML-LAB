@@ -131,4 +131,4 @@ for stump_class_attribute, stump_class_num in zip(stump_attribute_classes ,range
 
 
 # if the split is homogenous, we have a leaf! all done
-# otherwise, we need to choose another node (stump)  m
+# otherwise, we need to choose another node (stump)  m  xxx
