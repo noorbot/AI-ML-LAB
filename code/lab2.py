@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np
 
-file_name = "data/example.csv"         # <-- change file name to match data set
+train_file_name = "data/example.csv"         # <-- change file name to match data set
+test_file_name = "data/example_test.csv"
 
 # read from data file and save to pandas DataFrame 'data'
-data = pd.read_csv(file_name, header = None)
+data = pd.read_csv(train_file_name, header = None)
+test_data_m = pd.read_csv(test_file_name, header=None) #importing test dataset into dataframe
 # data = pd.DataFrame([ 
 # ['Sunny',   'Weak',   'No'], 
 # ['Sunny',   'Strong', 'No'],
@@ -151,13 +153,6 @@ def split_data(dataset):
             print('not homogenous')
 
 
-
-
-# stump_col = find_stump(data)
-
-# split_data(data)
-
-
 def generate_sub_tree(stump_col, train_data):
     # the goal is to pass the stump feature in
     stump_value_count_dict = train_data[stump_col].value_counts(sort=False) #dictionary of the count of unqiue feature value
@@ -209,7 +204,6 @@ def id3(data_m, target_col):
 
 
 tree = id3(data, -1)
-
 print(tree)
 
 def predict(tree, instance):
@@ -237,11 +231,5 @@ def evaluate(tree, test_data_m):
     return accuracy
 
 
-test_data_m = pd.read_csv("data/example_test.csv") #importing test dataset into dataframe
-
 accuracy = evaluate(tree, test_data_m) #evaluating the test dataset
 print(accuracy)
-
-
-# if the split is homogenous, we have a leaf! all done
-# otherwise, we need to choose another node (stump)
