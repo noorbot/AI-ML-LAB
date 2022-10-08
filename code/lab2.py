@@ -62,9 +62,9 @@ def calc_entropies(dataset):
     for attribute in range(0, num_attributes):                 # for each attribute ...
         attribute_classes = dataset.iloc[:, attribute].unique()   # find unique attribute classes
         num_attribute_classes = np.count_nonzero(attribute_classes)
-        print('\nattribute: ' + str(attribute))
-        print('num attribute classes: ' + str(num_attribute_classes))
-        print(attribute_classes)
+        #print('\nattribute: ' + str(attribute))
+        #print('num attribute classes: ' + str(num_attribute_classes))
+        #print(attribute_classes)
 
         for clas, i in zip(attribute_classes, range(0,num_attribute_classes)):                         # for each class of an attribute ...
             num_attribute_class_for_target = dataset.iloc[:,attribute].value_counts()[clas]               # count instances of that class
@@ -72,17 +72,17 @@ def calc_entropies(dataset):
             attr_class_entropy = 0
             
             for clas_1, j in zip(target_classes, range(0,num_target_classes) ):                      # for each target variable class
-                print("\nattribute class: " + str(clas) + "      target class: "  + str(clas_1))
+                #print("\nattribute class: " + str(clas) + "      target class: "  + str(clas_1))
                 proppy = len(dataset[(dataset.iloc[:,attribute]==clas) & (dataset.iloc[:,-1]==clas_1)])
-                print('proppppuy' + str(proppy))
-                print(prev_num_attribute_classes)
+                #print('proppppuy' + str(proppy))
+                #print(prev_num_attribute_classes)
                 Attribute_Entropies.iloc[-1, 3 + j] = proppy
                 if(proppy !=0):
                     attr_class_entropy = attr_class_entropy - proppy/num_attribute_class_for_target * np.log2(proppy/num_attribute_class_for_target)
                 else: attr_class_entropy = attr_class_entropy +0
                 Attribute_Entropies.iloc[-1, -1] = attr_class_entropy
-                print("HEERHER")
-                print(Attribute_Entropies)
+                #print("HEERHER")
+                #print(Attribute_Entropies)
             
         #prev_num_attribute_classes = prev_num_attribute_classes   should not be needed anymore
 
@@ -91,7 +91,7 @@ def calc_entropies(dataset):
 
 def calc_IGs(dataset, target_entropy, Attribute_Entropies):
     prev_num_attribute_classes = 0
-    IG = target_entropy
+    #IG = target_entropy
     Attribute_IG = pd.DataFrame(index=np.arange(0), columns=np.arange(2))
 
     # find information gain of each attribute
@@ -103,11 +103,17 @@ def calc_IGs(dataset, target_entropy, Attribute_Entropies):
 
         #print('num attributes: ' + str(num_attributes) + '    num classes:' + str(num_attribute_classes))
 
-        for i in range(0,num_attribute_classes):                 # for each target class ...
+        for i in range(0, num_attribute_classes):                 # for each target class ...
             IG = IG - (Attribute_Entropies.iloc[prev_num_attribute_classes + i , 2] / num_instances) * (Attribute_Entropies.iloc[prev_num_attribute_classes + i , -1])
+            #print('IG')
+            #print(IG)
             Attribute_IG.iloc[attribute, -1] = IG
+            print('proportion')
+            print(Attribute_Entropies.iloc[prev_num_attribute_classes + i , 2])
+            #print('entropy')
+            #print(Attribute_Entropies.iloc[prev_num_attribute_classes + i , -1])
 
-        prev_num_attribute_classes = num_attribute_classes
+        prev_num_attribute_classes = prev_num_attribute_classes + num_attribute_classes
 
     print(Attribute_IG)
     return Attribute_IG
@@ -122,7 +128,7 @@ def find_stump(dataset):
     Attribute_IG = calc_IGs(dataset, target_entropy, Attribute_Entropies)
 
     # pick attribute with highest information gain as stump
-    stump_col = Attribute_IG[Attribute_IG.iloc[1, :] == Attribute_IG.iloc[1, :].max()].iloc[0,0]
+    stump_col = Attribute_IG[Attribute_IG.iloc[:, 1] == Attribute_IG.iloc[:, 1].max()].iloc[0,0]
     print('Stump attribute index: ' + str(stump_col))
     return(stump_col)
 
@@ -152,60 +158,60 @@ stump_col = find_stump(data)
 split_data(data)
 
 
-def generate_sub_tree(feature_name, train_data, target_col, class_list):
-    # the goal is to 
+# def generate_sub_tree(feature_name, train_data, target_col, class_list):
+#     # the goal is to 
     
     
-    # -----------
-    feature_value_count_dict = train_data[feature_name].value_counts(sort=False) #dictionary of the count of unqiue feature value
-    tree = {} #sub tree or node
+#     # -----------
+#     feature_value_count_dict = train_data[feature_name].value_counts(sort=False) #dictionary of the count of unqiue feature value
+#     tree = {} #sub tree or node
     
-    for feature_value, count in feature_value_count_dict.iteritems():
-        feature_value_data = train_data[train_data[feature_name] == feature_value] #dataset with only feature_name = feature_value
+#     for feature_value, count in feature_value_count_dict.iteritems():
+#         feature_value_data = train_data[train_data[feature_name] == feature_value] #dataset with only feature_name = feature_value
         
-        assigned_to_node = False #flag for tracking feature_value is pure class or not
-        for c in class_list: #for each class
-            class_count = feature_value_data[feature_value_data.iloc[:,target_col] == c].shape[0] #count of class c
+#         assigned_to_node = False #flag for tracking feature_value is pure class or not
+#         for c in class_list: #for each class
+#             class_count = feature_value_data[feature_value_data.iloc[:,target_col] == c].shape[0] #count of class c
 
-            if class_count == count: #count of feature_value = count of class (pure class)
-                tree[feature_value] = c #adding node to the tree
-                train_data = train_data[train_data[feature_name] != feature_value] #removing rows with feature_value
-                assigned_to_node = True
-        if not assigned_to_node: #not pure class
-            tree[feature_value] = "?" #should extend the node, so the branch is marked with ?
+#             if class_count == count: #count of feature_value = count of class (pure class)
+#                 tree[feature_value] = c #adding node to the tree
+#                 train_data = train_data[train_data[feature_name] != feature_value] #removing rows with feature_value
+#                 assigned_to_node = True
+#         if not assigned_to_node: #not pure class
+#             tree[feature_value] = "?" #should extend the node, so the branch is marked with ?
             
-    return tree, train_data
+#     return tree, train_data
 
 
-def make_tree(root, prev_feature_value, train_data):
-    if train_data.shape[0] != 0: #if dataset becomes enpty after updating
-        max_info_feature = find_most_informative_feature(train_data) #most informative feature
-        tree, train_data = generate_sub_tree(max_info_feature, train_data) #getting tree node and updated dataset
-        next_root = None
+# def make_tree(root, prev_feature_value, train_data):
+#     if train_data.shape[0] != 0: #if dataset becomes enpty after updating
+#         stump_col = find_stump(train_data) #most informative feature
+#         tree, train_data = generate_sub_tree(stump, train_data) #getting tree node and updated dataset
+#         next_root = None
         
-        if prev_feature_value != None: #add to intermediate node of the tree
-            root[prev_feature_value] = dict()
-            root[prev_feature_value][max_info_feature] = tree
-            next_root = root[prev_feature_value][max_info_feature]
-        else: #add to root of the tree
-            root[max_info_feature] = tree
-            next_root = root[max_info_feature]
+#         if prev_feature_value != None: #add to intermediate node of the tree
+#             root[prev_feature_value] = dict()
+#             root[prev_feature_value][stump_col] = tree
+#             next_root = root[prev_feature_value][stump_col]
+#         else: #add to root of the tree
+#             root[stump_col] = tree
+#             next_root = root[stump_col]
         
-        for node, branch in list(next_root.items()): #iterating the tree node
-            if branch == "?": #if it is expandable
-                feature_value_data = train_data[train_data[max_info_feature] == node] #using the updated dataset
-                make_tree(next_root, node, feature_value_data) #recursive call with updated dataset
+#         for node, branch in list(next_root.items()): #iterating the tree node
+#             if branch == "?": #if it is expandable
+#                 feature_value_data = train_data[train_data[stump_col] == node] #using the updated dataset
+#                 make_tree(next_root, node, feature_value_data) #recursive call with updated dataset
 
 
-def id3(data_m, target_col):
-    data = data_m.copy() #getting a copy of the dataset
-    tree = {} #tree which will be updated
-    class_list = data.iloc[:,target_col].unique() #getting unqiue classes of the target col
-    make_tree(tree, None, data_m) #start calling recursion
-    return tree
+# def id3(data_m, target_col):
+#     data = data_m.copy() #getting a copy of the dataset
+#     tree = {} #tree which will be updated
+#     #class_list = data.iloc[:,target_col].unique() #getting unqiue classes of the target col
+#     make_tree(tree, None, data) #start calling recursion
+#     return tree
 
 
-tree = id3(data, -1)
+# tree = id3(data, -1)
 
 # if the split is homogenous, we have a leaf! all done
 # otherwise, we need to choose another node (stump)
