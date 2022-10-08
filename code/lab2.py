@@ -158,28 +158,24 @@ def split_data(dataset):
 # split_data(data)
 
 
-def generate_sub_tree(feature_name, train_data):
+def generate_sub_tree(stump_col, train_data):
     # the goal is to pass the stump feature in
-    
-
-    
-    # -----------
-    feature_value_count_dict = train_data[feature_name].value_counts(sort=False) #dictionary of the count of unqiue feature value
+    stump_value_count_dict = train_data[stump_col].value_counts(sort=False) #dictionary of the count of unqiue feature value
     tree = {} #sub tree or node
     
-    for feature_value, count in feature_value_count_dict.iteritems():
-        feature_value_data = train_data[train_data[feature_name] == feature_value] #dataset with only feature_name = feature_value
+    for stump_value, count in stump_value_count_dict.items():
+        stump_value_data = train_data[train_data[stump_col] == stump_value] #dataset with only stump_col = stump_value
         
-        assigned_to_node = False #flag for tracking feature_value is pure class or not
+        assigned_to_node = False #flag for tracking stump_value is pure class or not
         for c in target_classes: #for each class
-            class_count = feature_value_data[feature_value_data.iloc[:,target_col] == c].shape[0] #count of class c
+            class_count = stump_value_data[stump_value_data.iloc[:,target_col] == c].shape[0] #count of class c
 
-            if class_count == count: #count of feature_value = count of class (pure class)
-                tree[feature_value] = c #adding node to the tree
-                train_data = train_data[train_data[feature_name] != feature_value] #removing rows with feature_value
+            if class_count == count: #if all
+                tree[stump_value] = c #adding node to the tree
+                train_data = train_data[train_data[stump_col] != stump_value] #removing rows with stump_value
                 assigned_to_node = True
         if not assigned_to_node: #not pure class
-            tree[feature_value] = "?" #should extend the node, so the branch is marked with ?
+            tree[stump_value] = "?" #should extend the node, so the branch is marked with ?
             
     return tree, train_data
 
@@ -215,6 +211,37 @@ def id3(data_m, target_col):
 tree = id3(data, -1)
 
 print(tree)
+
+def predict(tree, instance):
+    if not isinstance(tree, dict): #if it is leaf node
+        return tree #return the value
+    else:
+        root_node = next(iter(tree)) #getting first key/feature name of the dictionary
+        feature_value = instance[root_node] #value of the feature
+        if feature_value in tree[root_node]: #checking the feature value in current tree node
+            return predict(tree[root_node][feature_value], instance) #goto next feature
+        else:
+            return None
+
+
+def evaluate(tree, test_data_m):
+    correct_predict = 0
+    wrong_predict = 0
+    for index, row in test_data_m.iterrows(): #for each row in the dataset
+        result = predict(tree, test_data_m.iloc[index]) #predict the row
+        if result == test_data_m.iloc[target_col, :].iloc[index]: #predicted value and expected value is same or not
+            correct_predict += 1 #increase correct count
+        else:
+            wrong_predict += 1 #increase incorrect count
+    accuracy = correct_predict / (correct_predict + wrong_predict) #calculating accuracy
+    return accuracy
+
+
+test_data_m = pd.read_csv("data/example_test.csv") #importing test dataset into dataframe
+
+accuracy = evaluate(tree, test_data_m) #evaluating the test dataset
+print(accuracy)
+
 
 # if the split is homogenous, we have a leaf! all done
 # otherwise, we need to choose another node (stump)
