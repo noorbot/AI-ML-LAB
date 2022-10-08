@@ -30,6 +30,7 @@ num_instances = data.shape[0]
 print('\nNumber of attributes: ' + str(num_attributes))
 print('Number of instances: ' + str(num_instances))
 
+target_col = -1
 target_classes = data.iloc[:, -1].unique()
 print('Target variable classes: ' + str(target_classes))
 num_target_classes = np.count_nonzero(target_classes)
@@ -37,7 +38,7 @@ num_target_classes = np.count_nonzero(target_classes)
 class_prop = []
 attribute_class_prop = []
 
-target_cols = []
+#target_cols = []
 
 
 def calc_target_entropy(dataset):
@@ -91,7 +92,6 @@ def calc_entropies(dataset):
 
 def calc_IGs(dataset, target_entropy, Attribute_Entropies):
     prev_num_attribute_classes = 0
-    #IG = target_entropy
     Attribute_IG = pd.DataFrame(index=np.arange(0), columns=np.arange(2))
 
     # find information gain of each attribute
@@ -153,65 +153,68 @@ def split_data(dataset):
 
 
 
-stump_col = find_stump(data)
+# stump_col = find_stump(data)
 
-split_data(data)
+# split_data(data)
 
 
-# def generate_sub_tree(feature_name, train_data, target_col, class_list):
-#     # the goal is to 
+def generate_sub_tree(feature_name, train_data):
+    # the goal is to pass the stump feature in
     
+
     
-#     # -----------
-#     feature_value_count_dict = train_data[feature_name].value_counts(sort=False) #dictionary of the count of unqiue feature value
-#     tree = {} #sub tree or node
+    # -----------
+    feature_value_count_dict = train_data[feature_name].value_counts(sort=False) #dictionary of the count of unqiue feature value
+    tree = {} #sub tree or node
     
-#     for feature_value, count in feature_value_count_dict.iteritems():
-#         feature_value_data = train_data[train_data[feature_name] == feature_value] #dataset with only feature_name = feature_value
+    for feature_value, count in feature_value_count_dict.iteritems():
+        feature_value_data = train_data[train_data[feature_name] == feature_value] #dataset with only feature_name = feature_value
         
-#         assigned_to_node = False #flag for tracking feature_value is pure class or not
-#         for c in class_list: #for each class
-#             class_count = feature_value_data[feature_value_data.iloc[:,target_col] == c].shape[0] #count of class c
+        assigned_to_node = False #flag for tracking feature_value is pure class or not
+        for c in target_classes: #for each class
+            class_count = feature_value_data[feature_value_data.iloc[:,target_col] == c].shape[0] #count of class c
 
-#             if class_count == count: #count of feature_value = count of class (pure class)
-#                 tree[feature_value] = c #adding node to the tree
-#                 train_data = train_data[train_data[feature_name] != feature_value] #removing rows with feature_value
-#                 assigned_to_node = True
-#         if not assigned_to_node: #not pure class
-#             tree[feature_value] = "?" #should extend the node, so the branch is marked with ?
+            if class_count == count: #count of feature_value = count of class (pure class)
+                tree[feature_value] = c #adding node to the tree
+                train_data = train_data[train_data[feature_name] != feature_value] #removing rows with feature_value
+                assigned_to_node = True
+        if not assigned_to_node: #not pure class
+            tree[feature_value] = "?" #should extend the node, so the branch is marked with ?
             
-#     return tree, train_data
+    return tree, train_data
 
 
-# def make_tree(root, prev_feature_value, train_data):
-#     if train_data.shape[0] != 0: #if dataset becomes enpty after updating
-#         stump_col = find_stump(train_data) #most informative feature
-#         tree, train_data = generate_sub_tree(stump, train_data) #getting tree node and updated dataset
-#         next_root = None
+def make_tree(root, prev_feature_value, train_data):
+    if train_data.shape[0] != 0: #if dataset becomes enpty after updating
+        stump_col = find_stump(train_data) #most informative feature
+        tree, train_data = generate_sub_tree(stump_col, train_data) #getting tree node and updated dataset
+        next_root = None
         
-#         if prev_feature_value != None: #add to intermediate node of the tree
-#             root[prev_feature_value] = dict()
-#             root[prev_feature_value][stump_col] = tree
-#             next_root = root[prev_feature_value][stump_col]
-#         else: #add to root of the tree
-#             root[stump_col] = tree
-#             next_root = root[stump_col]
+        if prev_feature_value != None: #add to intermediate node of the tree
+            root[prev_feature_value] = dict()
+            root[prev_feature_value][stump_col] = tree
+            next_root = root[prev_feature_value][stump_col]
+        else: #add to root of the tree
+            root[stump_col] = tree
+            next_root = root[stump_col]
         
-#         for node, branch in list(next_root.items()): #iterating the tree node
-#             if branch == "?": #if it is expandable
-#                 feature_value_data = train_data[train_data[stump_col] == node] #using the updated dataset
-#                 make_tree(next_root, node, feature_value_data) #recursive call with updated dataset
+        for node, branch in list(next_root.items()): #iterating the tree node
+            if branch == "?": #if it is expandable
+                feature_value_data = train_data[train_data[stump_col] == node] #using the updated dataset
+                make_tree(next_root, node, feature_value_data) #recursive call with updated dataset
 
 
-# def id3(data_m, target_col):
-#     data = data_m.copy() #getting a copy of the dataset
-#     tree = {} #tree which will be updated
-#     #class_list = data.iloc[:,target_col].unique() #getting unqiue classes of the target col
-#     make_tree(tree, None, data) #start calling recursion
-#     return tree
+def id3(data_m, target_col):
+    data = data_m.copy() #getting a copy of the dataset
+    tree = {} #tree which will be updated
+    #class_list = data.iloc[:,target_col].unique() #getting unqiue classes of the target col
+    make_tree(tree, None, data) #start calling recursion
+    return tree
 
 
-# tree = id3(data, -1)
+tree = id3(data, -1)
+
+print(tree)
 
 # if the split is homogenous, we have a leaf! all done
 # otherwise, we need to choose another node (stump)
