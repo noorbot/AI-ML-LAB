@@ -134,23 +134,23 @@ def find_stump(dataset):
     print('Stump attribute index: ' + str(stump_col))
     return(stump_col)
 
-def split_data(dataset):
-    # split the data by the classes fo the chosen stump
-    # then would need to check for homo (unique) to decide if its a leaf or if need to continue branching (repeat process)
-    stump_attribute_classes = dataset.iloc[:, stump_col].unique()
-    print('\nStump classes: ' + str(stump_attribute_classes))
-    num_stump_attribute_classes = np.count_nonzero(stump_attribute_classes)
-    print('Num Stump classes: ' + str(num_stump_attribute_classes))
+# def split_data(dataset):
+#     # split the data by the classes fo the chosen stump
+#     # then would need to check for homo (unique) to decide if its a leaf or if need to continue branching (repeat process)
+#     stump_attribute_classes = dataset.iloc[:, stump_col].unique()
+#     print('\nStump classes: ' + str(stump_attribute_classes))
+#     num_stump_attribute_classes = np.count_nonzero(stump_attribute_classes)
+#     print('Num Stump classes: ' + str(num_stump_attribute_classes))
 
-    data_split = {}
-    for stump_class_attribute, stump_class_num in zip(stump_attribute_classes ,range(0,num_stump_attribute_classes)):      # make a new datasets by splitting by stump attribute classes
-        data_split[stump_class_num] = dataset[dataset.iloc[:, stump_col]== stump_class_attribute].copy()
-        print(data_split[stump_class_num])
-        #print((data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all() )
-        if (data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all(): 
-            print('homogenous')
-        else: 
-            print('not homogenous')
+#     data_split = {}
+#     for stump_class_attribute, stump_class_num in zip(stump_attribute_classes ,range(0,num_stump_attribute_classes)):      # make a new datasets by splitting by stump attribute classes
+#         data_split[stump_class_num] = dataset[dataset.iloc[:, stump_col]== stump_class_attribute].copy()
+#         print(data_split[stump_class_num])
+#         #print((data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all() )
+#         if (data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all(): 
+#             print('homogenous')
+#         else: 
+#             print('not homogenous')
 
 
 def generate_sub_tree(stump_col, train_data):
@@ -221,15 +221,23 @@ def predict(tree, instance):
 def evaluate(tree, test_data_m):
     correct_predict = 0
     wrong_predict = 0
-    for index, row in test_data_m.iterrows(): #for each row in the dataset
-        result = predict(tree, test_data_m.iloc[index]) #predict the row
-        if result == test_data_m.iloc[target_col, :].iloc[index]: #predicted value and expected value is same or not
+    num_testdata_rows = test_data_m.shape[0]
+    for row in range(0,num_testdata_rows): #for each row in the dataset
+        print(row)
+        result = predict(tree, test_data_m.iloc[row,:]) #predict the row
+        print('result:  ' + str(result))
+        print('thing:   ' + str(test_data_m.iloc[row, target_col]))
+        if result == test_data_m.iloc[row, target_col]: #predicted value and expected value is same or not
             correct_predict += 1 #increase correct count
+            print("YES")
         else:
             wrong_predict += 1 #increase incorrect count
+            print("NO")
     accuracy = correct_predict / (correct_predict + wrong_predict) #calculating accuracy
     return accuracy
 
 
+
 accuracy = evaluate(tree, test_data_m) #evaluating the test dataset
 print(accuracy)
+
