@@ -1,35 +1,64 @@
 import pandas as pd
+from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-# train_file_name = "results/letter_recognition_train_data.csv"         # <-- change file name to match data set
-# test_file_name = "results/letter_recognition_test_data.csv"
-
-train_file_name = "data/example.csv"         # <-- change file name to match data set
-test_file_name = "data/example_test.csv"
+train_file_name = "results/wdbc_train_data.csv"         # <-- change file name to match data set
+test_file_name = "results/wdbc_test_data.csv"
 
 # read from data file and save to pandas DataFrame 'data'
-data = pd.read_csv(train_file_name, header = None)
-test_data_m = pd.read_csv(test_file_name, header=None) #importing test dataset into dataframe
+train_data = pd.read_csv(train_file_name, header = None)
+test_data = pd.read_csv(test_file_name, header=None) #importing test dataset into dataframe
 
-
-print(data.head())
+print(train_data.head())
 
 # count the number of attributes
-num_attributes = data.shape[1] - 1
-num_instances = data.shape[0]
+num_attributes = train_data.shape[1] - 1
+num_instances = train_data.shape[0]
 print('\nNumber of attributes: ' + str(num_attributes))
 print('Number of instances: ' + str(num_instances))
 
 target_col = -1
-target_classes = data.iloc[:, -1].unique()
+target_classes = train_data.iloc[:, -1].unique()
 print('Target variable classes: ' + str(target_classes))
 num_target_classes = np.count_nonzero(target_classes)
 
 class_prop = []
 attribute_class_prop = []
 
-#target_cols = []
 
+def bin_numerical_data(train_data, test_data):
+    num_bins = 20
+    num_attributes = train_data.shape[1] - 1
+    num_instances_train = train_data.shape[0]
+    num_instances_test = test_data.shape[0]
+    # determine which columns have numerical values then take range and split into x bins
+    for i in range(num_attributes):
+        print(is_numeric_dtype(train_data.iloc[0,i]))
+        if (is_numeric_dtype(train_data.iloc[0,i])) == True:
+            max = np.max(train_data.iloc[:,i])
+            min = np.min(train_data.iloc[:,i])
+            attribute_range = max - min
+            
+            for j in range(num_instances_train):
+                print("\nvalue: " + str(train_data.iloc[j, i]))
+                for bin in range(num_bins):
+                    if train_data.iloc[j, i] >= max - (bin+1) * (attribute_range / num_bins) :
+                        train_data.loc[j, i] = max - (bin+1/2)*(attribute_range / num_bins)
+                        print("set equal to " + str(max - (bin+1/2)*(attribute_range / num_bins)))
+                        break 
+
+    for k in range(num_attributes):
+        print(is_numeric_dtype(test_data.iloc[0,k]))
+        if (is_numeric_dtype(test_data.iloc[0,k])) == True:
+            for l in range(num_instances_test):
+                print("\nvalue: " + str(test_data.iloc[l,k]))
+                for birn in range(num_bins):
+                    if test_data.iloc[l, k] >= max - (birn+1) * (attribute_range / num_bins) :
+                        test_data.loc[l, k] = max - (birn+1/2)*(attribute_range / num_bins)
+                        print("set equal to " + str(max - (birn+1/2)*(attribute_range / num_bins)))
+                        break 
+
+    return train_data, test_data
 
 def calc_target_entropy(dataset, num_instances, target_classes, num_target_classes):
     target_entropy = 0
@@ -82,6 +111,7 @@ def calc_entropies(dataset, target_classes, num_target_classes):
             
         #prev_num_attribute_classes = prev_num_attribute_classes   should not be needed anymore
 
+    print("Attribute Entropies:")
     print(Attribute_Entropies)
     return Attribute_Entropies
 
@@ -176,16 +206,13 @@ def make_tree(root, prev_feature_value, train_data):
                 make_tree(next_root, node, feature_value_data) #recursive call with updated dataset
 
 
-def id3(data_m):
-    data = data_m.copy() #getting a copy of the dataset
+def id3(train_data):
+    data = train_data.copy() #getting a copy of the dataset
     tree = {} #tree which will be updated
     #class_list = data.iloc[:,target_col].unique() #getting unqiue classes of the target col
     make_tree(tree, None, data) #start calling recursion
     return tree
 
-
-tree = id3(data)
-print(tree)
 
 def predict(tree, instance):
     if not isinstance(tree, dict): #if it is leaf node
@@ -199,26 +226,35 @@ def predict(tree, instance):
             return None
 
 
-def evaluate(tree, test_data_m):
+def evaluate(tree, test_data):
     correct_predict = 0
     wrong_predict = 0
-    num_testdata_rows = test_data_m.shape[0]
+    num_testdata_rows = test_data.shape[0]
     for row in range(0,num_testdata_rows): #for each row in the dataset
-        print(row)
-        result = predict(tree, test_data_m.iloc[row,:]) #predict the row
+        result = predict(tree, test_data.iloc[row,:]) #predict the row
         print('result:  ' + str(result))
-        print('thing:   ' + str(test_data_m.iloc[row, target_col]))
-        if result == test_data_m.iloc[row, target_col]: #predicted value and expected value is same or not
+        print('thing:   ' + str(test_data.iloc[row, target_col]))
+        if result == test_data.iloc[row, target_col]: #predicted value and expected value is same or not
             correct_predict += 1 #increase correct count
         else:
             wrong_predict += 1 #increase incorrect count
     accuracy = correct_predict / (correct_predict + wrong_predict) #calculating accuracy
     return accuracy
 
+train_data, test_data = bin_numerical_data(train_data, test_data)
 
 
-accuracy = evaluate(tree, test_data_m) #evaluating the test dataset
-print(accuracy)
+print(train_data)
+print(test_data)
+
+# tree = id3(train_data)
+# print(tree)
+
+# accuracy = evaluate(tree, test_data) #evaluating the test dataset
+# print('ACCURACY: ' + str(accuracy))
+
+
+
 
 # def split_data(dataset):
 #     # split the data by the classes fo the chosen stump
