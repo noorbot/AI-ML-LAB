@@ -2,8 +2,8 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-train_file_name = "results/wdbc_train_data.csv"         # <-- change file name to match data set
-test_file_name = "results/wdbc_test_data.csv"
+train_file_name = "binned/wdbc_train_data.csv"         # <-- change file name to match data set
+test_file_name = "binned/wdbc_test_data.csv"
 
 # read from data file and save to pandas DataFrame 'data'
 train_data = pd.read_csv(train_file_name, header = None)
@@ -247,11 +247,9 @@ def evaluate(tree, test_data):
     accuracy = correct_predict / (correct_predict + wrong_predict) #calculating accuracy
     return accuracy
 
-train_data, test_data = bin_numerical_data(train_data, test_data)
-
-
-print(train_data)
-print(test_data)
+# train_data, test_data = bin_numerical_data(train_data, test_data)
+# print(train_data)
+# print(test_data)
 
 tree = id3(train_data)
 print(tree)
