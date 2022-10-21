@@ -50,12 +50,18 @@ def bin_numerical_data(train_data, test_data):
     for k in range(num_attributes):
         print(is_numeric_dtype(test_data.iloc[0,k]))
         if (is_numeric_dtype(test_data.iloc[0,k])) == True:
+            max = np.max(train_data.iloc[:,k])
+            min = np.min(train_data.iloc[:,k])
+            attribute_range = max - min
+
             for l in range(num_instances_test):
                 print("\nvalue: " + str(test_data.iloc[l,k]))
-                for birn in range(num_bins):
-                    if test_data.iloc[l, k] >= max - (birn+1) * (attribute_range / num_bins) :
-                        test_data.loc[l, k] = max - (birn+1/2)*(attribute_range / num_bins)
-                        print("set equal to " + str(max - (birn+1/2)*(attribute_range / num_bins)))
+                for bin in range(num_bins):
+                    print("tester: " + str(max - (bin+1) * (attribute_range / num_bins)))
+                    print("max: " + str(max) + "   birn: " + str(bin) + "    attribute range: " + str(attribute_range) + "    num bins: " + str(num_bins))
+                    if test_data.iloc[l, k] >= max - (bin+1) * (attribute_range / num_bins) :
+                        test_data.loc[l, k] = max - (bin+1/2)*(attribute_range / num_bins)
+                        print("set equal to " + str(max - (bin+1/2)*(attribute_range / num_bins)))
                         break 
 
     return train_data, test_data
@@ -247,11 +253,11 @@ train_data, test_data = bin_numerical_data(train_data, test_data)
 print(train_data)
 print(test_data)
 
-# tree = id3(train_data)
-# print(tree)
+tree = id3(train_data)
+print(tree)
 
-# accuracy = evaluate(tree, test_data) #evaluating the test dataset
-# print('ACCURACY: ' + str(accuracy))
+accuracy = evaluate(tree, test_data) #evaluating the test dataset
+print('ACCURACY: ' + str(accuracy))
 
 
 
