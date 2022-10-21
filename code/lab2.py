@@ -1,28 +1,16 @@
 import pandas as pd
 import numpy as np
 
+# train_file_name = "results/letter_recognition_train_data.csv"         # <-- change file name to match data set
+# test_file_name = "results/letter_recognition_test_data.csv"
+
 train_file_name = "data/example.csv"         # <-- change file name to match data set
 test_file_name = "data/example_test.csv"
 
 # read from data file and save to pandas DataFrame 'data'
 data = pd.read_csv(train_file_name, header = None)
 test_data_m = pd.read_csv(test_file_name, header=None) #importing test dataset into dataframe
-# data = pd.DataFrame([ 
-# ['Sunny',   'Weak',   'No'], 
-# ['Sunny',   'Strong', 'No'],
-# ['Overcast','Weak',   'Yes'], 
-# ['Rain',    'Weak',   'Yes'],
-# ['Rain',    'Weak',   'Yes'], 
-# ['Rain',    'Strong', 'No'],
-# ['Overcast','Strong', 'Yes'], 
-# ['Sunny',   'Weak',   'No'],
-# ['Sunny',   'Weak',   'Yes'],
-# ['Rain',    "Weak",   'Yes'],
-# ['Sunny',   'Strong', 'Yes'],
-# ['Overcast','Strong', 'Yes'],
-# ['Overcast','Weak',   'Yes'],
-# ['Rain',    'Strong', 'No']
-# ], columns=['Outlook', 'Wind', 'Tennis'])
+
 
 print(data.head())
 
@@ -43,8 +31,11 @@ attribute_class_prop = []
 #target_cols = []
 
 
-def calc_target_entropy(dataset):
+def calc_target_entropy(dataset, num_instances, target_classes, num_target_classes):
     target_entropy = 0
+    target_classes = dataset.iloc[:, -1].unique()   #needs to be updated with each recursion
+    num_target_classes = np.count_nonzero(target_classes)
+    num_instances = dataset.shape[0]
     # find the entropy of the target variable (include each class)
     for clas in target_classes:                 # find proportions
         prop = dataset.iloc[:,-1].value_counts()[clas] / num_instances
@@ -56,10 +47,12 @@ def calc_target_entropy(dataset):
     print('Target var entropy: ' + str(target_entropy))
     return(target_entropy)
 
-def calc_entropies(dataset):
+def calc_entropies(dataset, target_classes, num_target_classes):
     Attribute_Entropies = pd.DataFrame(index=np.arange(0), columns=np.arange(4 + num_target_classes))
     prev_num_attribute_classes = 0
     attr_class_entropy = 0
+    target_classes = dataset.iloc[:, -1].unique()   #needs to be updated with each recursion
+    num_target_classes = np.count_nonzero(target_classes)
 
     # find entropy of target variable w.r.t. each attribute
     for attribute in range(0, num_attributes):                 # for each attribute ...
@@ -92,9 +85,10 @@ def calc_entropies(dataset):
     print(Attribute_Entropies)
     return Attribute_Entropies
 
-def calc_IGs(dataset, target_entropy, Attribute_Entropies):
+def calc_IGs(dataset, target_entropy, Attribute_Entropies, num_instances):
     prev_num_attribute_classes = 0
     Attribute_IG = pd.DataFrame(index=np.arange(0), columns=np.arange(2))
+    num_instances = dataset.shape[0]
 
     # find information gain of each attribute
     for attribute in range(0, num_attributes):                 # for each attribute ...
@@ -110,51 +104,38 @@ def calc_IGs(dataset, target_entropy, Attribute_Entropies):
             #print('IG')
             #print(IG)
             Attribute_IG.iloc[attribute, -1] = IG
-            print('proportion')
-            print(Attribute_Entropies.iloc[prev_num_attribute_classes + i , 2])
+            # print('proportion')
+            # print(Attribute_Entropies.iloc[prev_num_attribute_classes + i , 2])
             #print('entropy')
             #print(Attribute_Entropies.iloc[prev_num_attribute_classes + i , -1])
 
         prev_num_attribute_classes = prev_num_attribute_classes + num_attribute_classes
 
-    print(Attribute_IG)
+    #print(Attribute_IG)
     return Attribute_IG
 
 def find_stump(dataset):
-    target_entropy = calc_target_entropy(dataset)
+    target_classes = dataset.iloc[:, -1].unique()   #needs to be updated with each recursion
+    num_target_classes = np.count_nonzero(target_classes)
+    num_instances = dataset.shape[0]
+    
+    target_entropy = calc_target_entropy(dataset, num_instances, target_classes, num_target_classes)
 
     Attribute_Entropies = pd.DataFrame(index=np.arange(0), columns=np.arange(4 + num_target_classes))
-    Attribute_Entropies = calc_entropies(dataset)
+    Attribute_Entropies = calc_entropies(dataset, target_classes, num_target_classes)
 
     Attribute_IG = pd.DataFrame(index=np.arange(0), columns=np.arange(2))
-    Attribute_IG = calc_IGs(dataset, target_entropy, Attribute_Entropies)
+    Attribute_IG = calc_IGs(dataset, target_entropy, Attribute_Entropies, num_instances)
 
     # pick attribute with highest information gain as stump
     stump_col = Attribute_IG[Attribute_IG.iloc[:, 1] == Attribute_IG.iloc[:, 1].max()].iloc[0,0]
     print('Stump attribute index: ' + str(stump_col))
     return(stump_col)
 
-# def split_data(dataset):
-#     # split the data by the classes fo the chosen stump
-#     # then would need to check for homo (unique) to decide if its a leaf or if need to continue branching (repeat process)
-#     stump_attribute_classes = dataset.iloc[:, stump_col].unique()
-#     print('\nStump classes: ' + str(stump_attribute_classes))
-#     num_stump_attribute_classes = np.count_nonzero(stump_attribute_classes)
-#     print('Num Stump classes: ' + str(num_stump_attribute_classes))
-
-#     data_split = {}
-#     for stump_class_attribute, stump_class_num in zip(stump_attribute_classes ,range(0,num_stump_attribute_classes)):      # make a new datasets by splitting by stump attribute classes
-#         data_split[stump_class_num] = dataset[dataset.iloc[:, stump_col]== stump_class_attribute].copy()
-#         print(data_split[stump_class_num])
-#         #print((data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all() )
-#         if (data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all(): 
-#             print('homogenous')
-#         else: 
-#             print('not homogenous')
-
 
 def generate_sub_tree(stump_col, train_data):
     # the goal is to pass the stump feature in
+    target_classes = train_data.iloc[:, -1].unique()   #needs to be updated with each recursion
     stump_value_count_dict = train_data[stump_col].value_counts(sort=False) #dictionary of the count of unqiue feature value
     tree = {} #sub tree or node
     
@@ -195,7 +176,7 @@ def make_tree(root, prev_feature_value, train_data):
                 make_tree(next_root, node, feature_value_data) #recursive call with updated dataset
 
 
-def id3(data_m, target_col):
+def id3(data_m):
     data = data_m.copy() #getting a copy of the dataset
     tree = {} #tree which will be updated
     #class_list = data.iloc[:,target_col].unique() #getting unqiue classes of the target col
@@ -203,7 +184,7 @@ def id3(data_m, target_col):
     return tree
 
 
-tree = id3(data, -1)
+tree = id3(data)
 print(tree)
 
 def predict(tree, instance):
@@ -229,10 +210,8 @@ def evaluate(tree, test_data_m):
         print('thing:   ' + str(test_data_m.iloc[row, target_col]))
         if result == test_data_m.iloc[row, target_col]: #predicted value and expected value is same or not
             correct_predict += 1 #increase correct count
-            print("YES")
         else:
             wrong_predict += 1 #increase incorrect count
-            print("NO")
     accuracy = correct_predict / (correct_predict + wrong_predict) #calculating accuracy
     return accuracy
 
@@ -241,3 +220,20 @@ def evaluate(tree, test_data_m):
 accuracy = evaluate(tree, test_data_m) #evaluating the test dataset
 print(accuracy)
 
+# def split_data(dataset):
+#     # split the data by the classes fo the chosen stump
+#     # then would need to check for homo (unique) to decide if its a leaf or if need to continue branching (repeat process)
+#     stump_attribute_classes = dataset.iloc[:, stump_col].unique()
+#     print('\nStump classes: ' + str(stump_attribute_classes))
+#     num_stump_attribute_classes = np.count_nonzero(stump_attribute_classes)
+#     print('Num Stump classes: ' + str(num_stump_attribute_classes))
+
+#     data_split = {}
+#     for stump_class_attribute, stump_class_num in zip(stump_attribute_classes ,range(0,num_stump_attribute_classes)):      # make a new datasets by splitting by stump attribute classes
+#         data_split[stump_class_num] = dataset[dataset.iloc[:, stump_col]== stump_class_attribute].copy()
+#         print(data_split[stump_class_num])
+#         #print((data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all() )
+#         if (data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all(): 
+#             print('homogenous')
+#         else: 
+#             print('not homogenous')
