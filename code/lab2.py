@@ -23,7 +23,7 @@ print('Target variable classes: ' + str(target_classes))
 num_target_classes = np.count_nonzero(target_classes)
 
 class_prop = []
-attribute_class_prop = []
+
 
 
 def bin_numerical_data(train_data, test_data):
@@ -255,25 +255,5 @@ tree = id3(train_data)
 print(tree)
 
 accuracy = evaluate(tree, test_data) #evaluating the test dataset
+print(tree)
 print('ACCURACY: ' + str(accuracy))
-
-
-
-
-# def split_data(dataset):
-#     # split the data by the classes fo the chosen stump
-#     # then would need to check for homo (unique) to decide if its a leaf or if need to continue branching (repeat process)
-#     stump_attribute_classes = dataset.iloc[:, stump_col].unique()
-#     print('\nStump classes: ' + str(stump_attribute_classes))
-#     num_stump_attribute_classes = np.count_nonzero(stump_attribute_classes)
-#     print('Num Stump classes: ' + str(num_stump_attribute_classes))
-
-#     data_split = {}
-#     for stump_class_attribute, stump_class_num in zip(stump_attribute_classes ,range(0,num_stump_attribute_classes)):      # make a new datasets by splitting by stump attribute classes
-#         data_split[stump_class_num] = dataset[dataset.iloc[:, stump_col]== stump_class_attribute].copy()
-#         print(data_split[stump_class_num])
-#         #print((data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all() )
-#         if (data_split[stump_class_num].iloc[:,-1] == data_split[stump_class_num].iloc[0,-1]).all(): 
-#             print('homogenous')
-#         else: 
-#             print('not homogenous')
