@@ -2,11 +2,11 @@ import pandas as pd
 import numpy as np
 from pandas.api.types import is_numeric_dtype
 
-train_file_name = "results/wdbc_train_data.csv"         # <-- change file name to match data set
-test_file_name = "results/wdbc_test_data.csv"
+train_file_name = "results/letter_recognition_train_data.csv"         # <-- change file name to match data set
+test_file_name = "results/letter_recognition_test_data.csv"
 
-binned_train_file = "binned/wdbc_train_data.csv"
-binned_test_file = "binned/wdbc_test_data.csv"
+binned_train_file = "binned/letter_recognition_train_data.csv"
+binned_test_file = "binned/letter_recognition_test_data.csv"
 
 # read from data file and save to pandas DataFrame 'data'
 train_data = pd.read_csv(train_file_name, header = None)
@@ -14,72 +14,49 @@ test_data = pd.read_csv(test_file_name, header=None) #importing test dataset int
 # train_data = train_data.iloc[:, :3]
 # test_data = test_data.iloc[:, :3]
 
-# train_data_udpated = pd.Dataframe()
-# test_data_udpated = pd.Dataframe()
 
 print(train_data)
 print(test_data)
 
-def bin_numerical_data(train_data, test_data):
-    train_data_updated = train_data.copy()
+def bin_numerical_data(train_data, test_data): # function to split continous numerical data into bins
+    train_data_updated = train_data.copy() # make copies of train and test dataframe
     test_data_updated = test_data.copy()
-    num_bins = 20
-    num_attributes = train_data.shape[1] - 1
-    num_instances_train = train_data.shape[0]
+    num_bins = 20 # number of bins to split data into
+    num_attributes = train_data.shape[1] - 1 # number of attributes in dataset
+    num_instances_train = train_data.shape[0] #number of instances and train and test sets
     num_instances_test = test_data.shape[0]
-    #determine which columns have numerical values then take range and split into x bins
-    for i in range(num_attributes):
-        # print('i type: ' + str(type(i)))
-        #print(is_numeric_dtype(train_data.iloc[0,i]))
-        if (is_numeric_dtype(train_data.iloc[0,i])) == True:
-            # print('maxerrr: ' + str(np.max(train_data.iloc[:,i])))
-            max = np.max([np.max(train_data.iloc[:,i]), np.max(test_data.iloc[:,i])])
-            min = np.min([np.min(train_data.iloc[:,i]), np.min(train_data.iloc[:,i])])
-            attribute_range = max - min
-            # print('max type: ' + str(type(max)))
-            # print('\nmax: ' + str(max) + "    "  + 'attribute raneg: ' + str(attribute_range))
 
-            for l in range(num_instances_train):
-                # print("\nvalue: " + str(test_data.iloc[l,i]))
-                for bin in range(num_bins):
-                    # print("test bin: " + str(max - (bin+1) * (attribute_range / num_bins)))
-                    #print("max: " + str(max) + "   birn: " + str(bin) + "    attribute range: " + str(attribute_range) + "    num bins: " + str(num_bins))
-                    if train_data.iloc[l, i] >= max - (bin+1) * (attribute_range / num_bins) :
-                        train_data_updated.loc[l, i] = round(max - (bin+1/2)*(attribute_range / num_bins), 5)
-                        # print("set equal to " + str(max - (bin+1/2)*(attribute_range / num_bins)))
+    for i in range(num_attributes): # for each colummn...
+        if (is_numeric_dtype(train_data.iloc[0,i])) == True:
+            max = np.max([np.max(train_data.iloc[:,i]), np.max(test_data.iloc[:,i])]) # find max value
+            min = np.min([np.min(train_data.iloc[:,i]), np.min(train_data.iloc[:,i])]) # find min value
+            attribute_range = max - min # calculate range
+
+            for l in range(num_instances_train): # for each instance, put the value into a bin
+                for bin in range(num_bins): # check through all bins
+                    if train_data.iloc[l, i] >= max - (bin+1) * (attribute_range / num_bins) : # check if its the correct bin
+                        train_data_updated.loc[l, i] = round(max - (bin+1/2)*(attribute_range / num_bins), 5) # update value to be middle of bin
                         break 
 
-    print("\n TRAIN SET")
-    for k in range(num_attributes):
-        # print('k type: ' + str(type(k)))
-       # print(is_numeric_dtype(test_data.iloc[0,k]))
+    for k in range(num_attributes): # reapeat process for test data set
         if (is_numeric_dtype(test_data.iloc[0,k])) == True:
-            # print('maxerrrk: ' + str(train_data.iloc[2,k]))
-            max = np.max([np.max(train_data.iloc[:,k]), np.max(test_data.iloc[:,k])])
-            min = np.min([np.min(train_data.iloc[:,k]), np.min(train_data.iloc[:,k])])
-            attribute_range = max - min
-            # print('max type: ' + str(type(max)))
-            # print('\nmax: ' + str(max) + "    "  + 'attribute raneg: ' + str(attribute_range))
+            max = np.max([np.max(train_data.iloc[:,k]), np.max(test_data.iloc[:,k])]) # find max value
+            min = np.min([np.min(train_data.iloc[:,k]), np.min(train_data.iloc[:,k])]) # find min value
+            attribute_range = max - min  # calculate range
 
             for l in range(num_instances_test):
-                # print("\nvalue: " + str(test_data.iloc[l,k]))
                 for bin in range(num_bins):
-                    # print("test bin: " + str(max - (bin+1) * (attribute_range / num_bins)))
-                    #print("max: " + str(max) + "   birn: " + str(bin) + "    attribute range: " + str(attribute_range) + "    num bins: " + str(num_bins))
-                    if test_data.iloc[l, k] >= max - (bin+1) * (attribute_range / num_bins) :
-                        test_data_updated.loc[l, k] = round(max - (bin+1/2)*(attribute_range / num_bins), 5)
-                        # print("set equal to " + str(max - (bin+1/2)*(attribute_range / num_bins)))
+                    if test_data.iloc[l, k] >= max - (bin+1) * (attribute_range / num_bins) : # check if its the correct bin
+                        test_data_updated.loc[l, k] = round(max - (bin+1/2)*(attribute_range / num_bins), 5) # update value to be middle of bin
                         break             
 
+    return train_data_updated, test_data_updated # return updated datasets
 
 
-    return train_data_updated, test_data_updated
-
-
-train_data, test_data = bin_numerical_data(train_data, test_data)
+train_data, test_data = bin_numerical_data(train_data, test_data)    # call function
 print(train_data)
 print(test_data)
 
 
-train_data.to_csv(binned_train_file, index = False, header = False)
+train_data.to_csv(binned_train_file, index = False, header = False)  # save results to .csv files
 test_data.to_csv(binned_test_file, index = False, header = False)
