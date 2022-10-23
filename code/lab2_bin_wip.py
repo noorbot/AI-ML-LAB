@@ -2,11 +2,11 @@ import pandas as pd
 import numpy as np
 from pandas.api.types import is_numeric_dtype
 
-train_file_name = "results/letter_recognition_train_data.csv"         # <-- change file name to match data set
-test_file_name = "results/letter_recognition_test_data.csv"
+train_file_name = "results/lp5_train_data.csv"         # <-- change file name to match data set
+test_file_name = "results/lp5_test_data.csv"
 
-binned_train_file = "binned/letter_recognition_train_data.csv"
-binned_test_file = "binned/letter_recognition_test_data.csv"
+binned_train_file = "binned/lp5_train_data.csv"
+binned_test_file = "binned/lp5_test_data.csv"
 
 # read from data file and save to pandas DataFrame 'data'
 train_data = pd.read_csv(train_file_name, header = None)
@@ -17,6 +17,8 @@ test_data = pd.read_csv(test_file_name, header=None) #importing test dataset int
 
 print(train_data)
 print(test_data)
+print(train_data.dtypes)
+print(test_data.dtypes)
 
 def bin_numerical_data(train_data, test_data): # function to split continous numerical data into bins
     train_data_updated = train_data.copy() # make copies of train and test dataframe
@@ -27,6 +29,7 @@ def bin_numerical_data(train_data, test_data): # function to split continous num
     num_instances_test = test_data.shape[0]
 
     for i in range(num_attributes): # for each colummn...
+        print(is_numeric_dtype(train_data.iloc[0,i]))
         if (is_numeric_dtype(train_data.iloc[0,i])) == True:
             max = np.max([np.max(train_data.iloc[:,i]), np.max(test_data.iloc[:,i])]) # find max value
             min = np.min([np.min(train_data.iloc[:,i]), np.min(train_data.iloc[:,i])]) # find min value

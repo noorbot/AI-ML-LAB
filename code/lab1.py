@@ -1,12 +1,12 @@
 import pandas as pd
 
 # input .csv file names
-file_name = "data/agaricus-lepiota.csv"         # <-- change file name to match data set
-train_file = "results/mushroom_train_data.csv"
-test_file = "results/mushroom_test_data.csv"
+file_name = "data/ecoli1.csv"         # <-- change file name to match data set
+train_file = "results/ecoli_train_data.csv"
+test_file = "results/ecoli_test_data.csv"
 
 # input target variable columns and test data split
-target_col = 0                               # <-- change to match index of target column
+target_col = 7                               # <-- change to match index of target column
 test_data_split = 0.2
 
 # read from data file and save to pandas DataFrame 'data'

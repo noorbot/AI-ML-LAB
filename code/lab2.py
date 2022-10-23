@@ -2,8 +2,8 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-train_file_name = "binned/letter_recognition_train_data.csv"         # <-- change file name to match data set
-test_file_name = "binned/letter_recognition_test_data.csv"
+train_file_name = "results/letter_recognition_train_data.csv"         # <-- change file name to match data set
+test_file_name = "results/letter_recognition_test_data.csv"
 
 # read from data file and save to pandas DataFrame 'data'
 train_data = pd.read_csv(train_file_name, header = None)
