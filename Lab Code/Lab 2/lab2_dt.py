@@ -1,6 +1,7 @@
 from re import A
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 
 #Calculate Total Entropy of Dataset
 def entropyS(dataframe, column):
@@ -36,16 +37,16 @@ def entropyAtt(df, attribute, targetVariable):
 def infoGain (entS, entSVTot):
     return entS + entSVTot
 
+#Create subset df when partitioning data for next node of tree
 def fiteredDf(df, attribute, val):
     return df[df[attribute] == val].reset_index(drop=True)
 
-
-#Find Winner
+#Find Winner of IG Array
 def findWinner(list):
     attributeWin = max(list, key=list.get)
     return attributeWin
 
-
+#Recursive function to build tree
 def buildTree(df,targetVariable, tree=None): 
     allAtt = df.columns.values  
     targetVariable = targetVariable
@@ -63,9 +64,6 @@ def buildTree(df,targetVariable, tree=None):
     nodeCol = df.loc[:, node]
     attColValues = nodeCol.unique()
 
-    print(attColValues)
-
-    
     #Create an empty dictionary to create tree    
     if tree is None:                    
         tree={}
@@ -92,94 +90,63 @@ def buildTree(df,targetVariable, tree=None):
                    
     return tree
 
+#Predict tree from test data
+def predict(tree, instance):
+    if not isinstance(tree, dict): #if it is leaf node
+        return tree #return the value
+    else:
+        root_node = next(iter(tree)) #getting first key/feature name of the dictionary
+        feature_value = instance[root_node] #value of the feature
+        if feature_value in tree[root_node]: #checking the feature value in current tree node
+            return predict(tree[root_node][feature_value], instance) #goto next feature
+        else:
+            return None
+
+#Evaluate peformance of decision tree against test data
+def evaluate(tree, testDF, label):
+    correct_preditct = 0
+    wrong_preditct = 0
+
+    for index, row in testDF.iterrows(): #for each row in the dataset
+        result = predict(tree, testDF.iloc[index]) #predict the row
+        if result == testDF[label].iloc[index]: #predicted value and expected value is same or not
+            correct_preditct += 1 #increase correct count
+        else:
+            wrong_preditct += 1 #increase incorrect count
+    
+    
+    accuracy = correct_preditct / (correct_preditct + wrong_preditct) #calculating accuracy
+    return accuracy
 
 
+trainData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\breast-cancer-wisconsin-wLabels-train.csv"
+trainData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\letter-recognition-wLabels-train.csv"
+trainData3 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\ecoli-wLabels-train.csv"
+trainData4 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\agaricus-lepiota-wLabels-train.csv"
+trainData5 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\lp5-formatted-wLabels-train.csv"
 
-inputData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\breast-cancer-wisconsin-wLabels-train.csv"
-inputData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\letter-recognition-wLabels-train.csv"
-inputData3 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\ecoli-wLabels-train.csv"
-inputData4 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\agaricus-lepiota-wLabels-train.csv"
-inputData5 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\lp5-formatted-wLabels-train.csv"
+testData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\breast-cancer-wisconsin-wLabels-test.csv"
+testData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\letter-recognition-wLabels-test.csv"
+testData3 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\ecoli-wLabels-test.csv"
+testData4 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\agaricus-lepiota-wLabels-test.csv"
+testData5 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\lp5-formatted-wLabels-test.csv"
 
 lecData = r"D:\Users\radam\Desktop\lecData.csv"
 
-#userDataPath = inputData2
-userDataPath = lecData
+
+userDataPath = trainData5
+trainDataPath = testData5
+#userDataPath = lecData
 
 #add header arguement to prevent first row from being read as labels. Enable whitespace delim line for whitespace delim datasets
 df = pd.read_csv(userDataPath)
+testDF = pd.read_csv(trainDataPath)
 columnsNamesArr = df.columns.values
 targetAttribute = columnsNamesArr[-1]
 
-
-# subdf = df[['Outlook', 'Play Tennis']]
-# print(subdf)
-
-# print(fiteredDf(df, 'Outlook', 'Rain'))
-
-# testDF = fiteredDf(df, 'Outlook', 'Rain')
-# print(testDF.drop(['Outlook'], axis = 1))
 print(buildTree(df, targetAttribute))
+tree = buildTree(df, targetAttribute)
 
-
-# #Finding the Entropy of Target Variable
-# entropyTotal = entropyS(df, targetAttribute)
-# igStump = {}
-
-# for column in columnsNamesArr[:-1]:
-#     testEnt = entropyAtt(df, column , targetAttribute)
-#     igStump.update({column:infoGain(entropyTotal, testEnt)})
-
-# stump = findWinner(igStump)
-# #Get uniques of winner attribute
-# stumpCol = df.loc[:, stump]
-# stumpColValues = stumpCol.unique()
-
-# print(stumpColValues)
-
-#Need This line to create branches
-#Do the calculation local to the for loop
-
-# for value in stumpColValues:
-#     dfTEST = df[df[stump]==value]
-#     dfAtt = dfTEST.drop(columns=stump)
-#     columnLabels = dfAtt.columns.values
-
-    # for x in columnLabels:
-    #     newSUM = entropyAtt(dfAtt, x, columnsNamesArr[-1])
-    # entropyStumpNew = entropyS(dfTEST, columnsNamesArr[-1])
-    # print(infoGain(entropyStumpNew, newSUM))
-    # entropySUM = entropyAt,t(dfTEST, "Temperature", columnsNamesArr[-1] )
-
-
-#dfTEST = df[df[stump]=='Overcast']
-# entropyStump = entropyCalc(dfTEST, columnsNamesArr[-1])
-# print(entropyStump)
-
-#print(df["outlook"].value_counts())
-
-# root: dictionary, the current pointed node/feature of the tree. It is contineously being updated.
-# prev_feature_value: Any datatype (Int or Float or String etc.) depending on the datatype of the previous feature, the previous value of the pointed node/feature
-# train_data: a pandas dataframe/dataset
-# label: string, name of the label of the dataframe (=Play Tennis)
-# class_list: list, unique classes of the label (=[Yes, No]).
-# returns: None
-
-# def make_tree(root, prev_feature_value, train_data, label, class_list):
-#     if train_data.shape[0] != 0: #if dataset becomes enpty after updating
-#         max_info_feature = find_most_informative_feature(train_data, label, class_list) #most informative feature
-#         tree, train_data = generate_sub_tree(max_info_feature, train_data, label, class_list) #getting tree node and updated dataset
-#         next_root = None
-        
-#         if prev_feature_value != None: #add to intermediate node of the tree
-#             root[prev_feature_value] = dict()
-#             root[prev_feature_value][max_info_feature] = tree
-#             next_root = root[prev_feature_value][max_info_feature]
-#         else: #add to root of the tree
-#             root[max_info_feature] = tree
-#             next_root = root[max_info_feature]
-        
-#         for node, branch in list(next_root.items()): #iterating the tree node
-#             if branch == "?": #if it is expandable
-#                 feature_value_data = train_data[train_data[max_info_feature] == node] #using the updated dataset
-#                 make_tree(next_root, node, feature_value_data, label, class_list) #recursive call with updated dataset
+#Evaluate Accuracy of Tree
+accuracy = evaluate(tree, testDF, targetAttribute)
+print("Accuracy of Decision Tree: " + str(accuracy*100) + "%")
