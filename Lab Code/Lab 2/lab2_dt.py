@@ -1,3 +1,4 @@
+from re import A
 import pandas as pd
 import numpy as np
 
@@ -27,6 +28,7 @@ def entropyAtt(df, attribute, targetVariable):
         svSamples = subdf[subdf[attribute]==attVal]
         weightedFrac = len(svSamples)/len(subdf)
         entropyTotal += (-1)*weightedFrac*(entropyS(svSamples, targetVariable))
+        
 
     return entropyTotal
 
@@ -34,13 +36,69 @@ def entropyAtt(df, attribute, targetVariable):
 def infoGain (entS, entSVTot):
     return entS + entSVTot
 
+def fiteredDf(df, attribute, val):
+    return df[df[attribute] == val].reset_index(drop=True)
+
+
 #Find Winner
 def findWinner(list):
     attributeWin = max(list, key=list.get)
     return attributeWin
 
-def createSubTree(df, attribute, targetVariable):
-    return
+
+def buildTree(df,targetVariable, tree=None): 
+    allAtt = df.keys()   #To make the code generic, changing target variable class name
+    targetVariable = targetVariable
+    
+    #Here we build our decision tree
+
+    #Get attribute with maximum information gain
+    #node = find_winner(df)
+    
+    #find the stump
+    entropyTotal = entropyS(df, targetVariable)
+    ig = {}
+
+    for column in allAtt[:-1]:
+        entropyDF = entropyAtt(df, column , targetAttribute)
+        ig.update({column:infoGain(entropyTotal, entropyDF)})
+
+    node = findWinner(ig)
+    # #Get uniques of winner attribute
+    nodeCol = df.loc[:, node]
+    attColValues = nodeCol.unique()
+
+    print(attColValues)
+
+    #Get distinct value of that attribute e.g Salary is node and Low,Med and High are values
+    # attValue = np.unique(df[node])
+    
+    #Create an empty dictionary to create tree    
+    if tree is None:                    
+        tree={}
+        tree[node] = {}
+    
+   #We make loop to construct a tree by calling this function recursively. 
+    #In this we check if the subset is pure and stops if it is pure. 
+
+    for value in attColValues:
+        
+        filteredDF = fiteredDf(df,node,value)
+        subDF = filteredDF.drop([node], axis = 1)
+
+        #print(value)
+        
+        clValue,counts = np.unique(subDF[targetVariable],return_counts=True)
+            
+        #Check Purity of Sub DF
+        if len(counts)==1:
+            tree[node][value] = clValue[0]
+
+        #Recursive Call                                                 
+        else:        
+            tree[node][value] = buildTree(subDF, targetVariable) 
+                   
+    return tree
 
 inputData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\breast-cancer-wisconsin-wLabels-train.csv"
 inputData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\letter-recognition-wLabels-train.csv"
@@ -59,8 +117,14 @@ columnsNamesArr = df.columns.values
 targetAttribute = columnsNamesArr[-1]
 
 
+# subdf = df[['Outlook', 'Play Tennis']]
+# print(subdf)
 
+# print(fiteredDf(df, 'Outlook', 'Rain'))
 
+# testDF = fiteredDf(df, 'Outlook', 'Rain')
+# print(testDF.drop(['Outlook'], axis = 1))
+print(buildTree(df, targetAttribute))
 
 
 
