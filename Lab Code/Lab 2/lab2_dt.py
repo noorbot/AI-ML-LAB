@@ -47,13 +47,8 @@ def findWinner(list):
 
 
 def buildTree(df,targetVariable, tree=None): 
-    allAtt = df.keys()   #To make the code generic, changing target variable class name
+    allAtt = df.columns.values  
     targetVariable = targetVariable
-    
-    #Here we build our decision tree
-
-    #Get attribute with maximum information gain
-    #node = find_winner(df)
     
     #find the stump
     entropyTotal = entropyS(df, targetVariable)
@@ -70,17 +65,14 @@ def buildTree(df,targetVariable, tree=None):
 
     print(attColValues)
 
-    #Get distinct value of that attribute e.g Salary is node and Low,Med and High are values
-    # attValue = np.unique(df[node])
     
     #Create an empty dictionary to create tree    
     if tree is None:                    
         tree={}
         tree[node] = {}
     
-   #We make loop to construct a tree by calling this function recursively. 
-    #In this we check if the subset is pure and stops if it is pure. 
 
+    #For loop to create ID3 Decision Tree Recursivley
     for value in attColValues:
         
         filteredDF = fiteredDf(df,node,value)
@@ -99,6 +91,9 @@ def buildTree(df,targetVariable, tree=None):
             tree[node][value] = buildTree(subDF, targetVariable) 
                    
     return tree
+
+
+
 
 inputData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\breast-cancer-wisconsin-wLabels-train.csv"
 inputData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\letter-recognition-wLabels-train.csv"
@@ -125,10 +120,6 @@ targetAttribute = columnsNamesArr[-1]
 # testDF = fiteredDf(df, 'Outlook', 'Rain')
 # print(testDF.drop(['Outlook'], axis = 1))
 print(buildTree(df, targetAttribute))
-
-
-
-
 
 
 # #Finding the Entropy of Target Variable
