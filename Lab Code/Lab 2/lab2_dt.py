@@ -98,13 +98,19 @@ def buildTree(df,targetVariable, tree=None):
 
 #Predict tree from test data
 def predict(tree, instance):
-    if not isinstance(tree, dict): #if it is leaf node
-        return tree #return the value
+
+    #Check if it is a leaf node
+    if not isinstance(tree, dict):
+        return tree
     else:
-        root_node = next(iter(tree)) #getting first key/feature name of the dictionary
-        feature_value = instance[root_node] #value of the feature
-        if feature_value in tree[root_node]: #checking the feature value in current tree node
-            return predict(tree[root_node][feature_value], instance) #goto next feature
+        #get attribute name from dictionary
+        root_node = next(iter(tree))
+        #value of the feature
+        feature_value = instance[root_node] 
+        #checking the feature value in current tree node
+        if feature_value in tree[root_node]: 
+            #goto next feature
+            return predict(tree[root_node][feature_value], instance) 
         else:
             return None
 
@@ -113,17 +119,25 @@ def evaluate(tree, testDF, label):
     correct_preditct = 0
     wrong_preditct = 0
 
-    for index, row in testDF.iterrows(): #for each row in the dataset
-        result = predict(tree, testDF.iloc[index]) #predict the row
-        if result == testDF[label].iloc[index]: #predicted value and expected value is same or not
-            correct_preditct += 1 #increase correct count
+    #Iterate through rows of dataframe
+    for index, row in testDF.iterrows(): 
+
+        #predict the row
+        result = predict(tree, testDF.iloc[index]) 
+
+        #Check if predicted value is the same a value from built tree
+        if result == testDF[label].iloc[index]:
+            #increase correct count
+            correct_preditct += 1 
         else:
-            wrong_preditct += 1 #increase incorrect count
+            #increase incorrect count
+            wrong_preditct += 1 
     
-    
-    accuracy = correct_preditct / (correct_preditct + wrong_preditct) #calculating accuracy
+    #Calculate the accuracy of trained tree
+    accuracy = correct_preditct / (correct_preditct + wrong_preditct)
     return accuracy
 
+#Bin datasets for attributes with continuous data
 def binDF(df, testDF, userDataPath):
 
     if userDataPath == trainData3:
@@ -147,37 +161,43 @@ def binDF(df, testDF, userDataPath):
 #elif userDataPath == trainData1:
     return
 
-trainData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\breast-cancer-wisconsin-wLabels-train.csv"
-trainData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\letter-recognition-wLabels-train.csv"
-trainData3 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\ecoli-wLabels-train.csv"
-trainData4 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\agaricus-lepiota-wLabels-train.csv"
-trainData5 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\lp5-formatted-wLabels-train.csv"
+#File paths for training datasets
+trainData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\wdbc_train_data.csv"
+trainData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\letter-recognition-wLabels-train.csv"
+trainData3 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\ecoli_train_data.csv"
+trainData4 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\agaricus-lepiota-wLabels-train.csv"
+trainData5 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\lp5_train_data.csv"
 
-testData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\breast-cancer-wisconsin-wLabels-test.csv"
-testData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\letter-recognition-wLabels-test.csv"
-testData3 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\ecoli-wLabels-test.csv"
-testData4 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\agaricus-lepiota-wLabels-test.csv"
-testData5 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\lp5-formatted-wLabels-test.csv"
+#File paths for testing datasets
+testData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\wdbc_test_data.csv"
+testData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\letter-recognition-wLabels-test.csv"
+testData3 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\ecoli_test_data.csv"
+testData4 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\agaricus-lepiota-wLabels-test.csv"
+testData5 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\lp5_test_data.csv"
 
+#Debugging datasets
 lecData = r"D:\Users\radam\Desktop\lecData.csv"
-
 test = r"D:\Users\radam\Desktop\wdbc_test_data.csv"
 train = r"D:\Users\radam\Desktop\wdbc_train_data.csv"
 
-userDataPath = trainData2
-testDataPath = testData2
-#userDataPath = lecData
+#Set dataset to build decision tree from and test
+userDataPath = trainData1
+testDataPath = testData1
 
+#For debugging and testing the program
+#userDataPath = lecData
 # userDataPath = train
 # testDataPath = test
 
-#add header arguement to prevent first row from being read as labels. Enable whitespace delim line for whitespace delim datasets
+#Create dataframes using csv files
 df = pd.read_csv(userDataPath)
 testDF = pd.read_csv(testDataPath)
 
+#Obtain attributes of the data set and set target variable to last value of array
 columnsNamesArr = df.columns.values
 targetAttribute = columnsNamesArr[-1]
 
+#Use training Data to create tree and print developed tree to terminal
 print(buildTree(df, targetAttribute))
 tree = buildTree(df, targetAttribute)
 
