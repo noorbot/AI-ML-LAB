@@ -124,7 +124,27 @@ def evaluate(tree, testDF, label):
     accuracy = correct_preditct / (correct_preditct + wrong_preditct) #calculating accuracy
     return accuracy
 
-def binDF(trainData, testData):
+def binDF(df, testDF, userDataPath):
+
+    if userDataPath == trainData3:
+        df['mcg'] = pd.cut(df['mcg'], bins = 20)
+        df['gvh'] = pd.cut(df['gvh'], bins = 20)
+        df['aac'] = pd.cut(df['aac'], bins = 20)
+        df['alm1'] = pd.cut(df['alm1'], bins = 20)
+        df['alm2'] = pd.cut(df['alm2'], bins = 20)
+
+        testDF['mcg'] = pd.cut(testDF['mcg'], bins = 20)
+        testDF['gvh'] = pd.cut(testDF['gvh'], bins = 20)
+        testDF['aac'] = pd.cut(testDF['aac'], bins = 20)
+        testDF['alm1'] = pd.cut(testDF['alm1'], bins = 20)
+        testDF['alm2'] = pd.cut(testDF['alm2'], bins = 20)
+
+    df = df.drop(['Sequence Name'], axis = 1)
+    dtestDFf = testDF.drop(['Sequence Name'], axis = 1)
+
+    return df, testDF
+
+#elif userDataPath == trainData1:
     return
 
 trainData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\breast-cancer-wisconsin-wLabels-train.csv"
@@ -141,47 +161,19 @@ testData5 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\lp5
 
 lecData = r"D:\Users\radam\Desktop\lecData.csv"
 
+test = r"D:\Users\radam\Desktop\wdbc_test_data.csv"
+train = r"D:\Users\radam\Desktop\wdbc_train_data.csv"
 
-userDataPath = trainData4
-testDataPath = testData4
-userDataPath = lecData
+userDataPath = trainData2
+testDataPath = testData2
+#userDataPath = lecData
+
+# userDataPath = train
+# testDataPath = test
 
 #add header arguement to prevent first row from being read as labels. Enable whitespace delim line for whitespace delim datasets
 df = pd.read_csv(userDataPath)
 testDF = pd.read_csv(testDataPath)
-
-a = 5
-b = 10
-
-if userDataPath == trainData3:
-    df['mcg'] = pd.cut(df['mcg'], bins = b)
-    df['gvh'] = pd.cut(df['gvh'], bins = 20)
-    df['aac'] = pd.cut(df['aac'], bins = a)
-    df['alm1'] = pd.cut(df['alm1'], bins = b)
-    df['alm2'] = pd.cut(df['alm2'], bins = a)
-
-    testDF['mcg'] = pd.cut(testDF['mcg'], bins = b)
-    testDF['gvh'] = pd.cut(testDF['gvh'], bins = 20)
-    testDF['aac'] = pd.cut(testDF['aac'], bins = a)
-    testDF['alm1'] = pd.cut(testDF['alm1'], bins = b)
-    testDF['alm2'] = pd.cut(testDF['alm2'], bins = a)
-
-    # df['mcg'] = pd.qcut(df['mcg'], q = a)
-    # df['gvh'] = pd.qcut(df['gvh'], q = a)
-    # df['aac'] = pd.qcut(df['aac'], q = a)
-    # df['alm1'] = pd.qcut(df['alm1'], q = a)
-    # df['alm2'] = pd.qcut(df['alm2'], q = a)
-
-    # testDF['mcg'] = pd.qcut(testDF['mcg'], q = a)
-    # testDF['gvh'] = pd.qcut(testDF['gvh'], q = a)
-    # testDF['aac'] = pd.qcut(testDF['aac'], q = a)
-    # testDF['alm1'] = pd.qcut(testDF['alm1'], q = a)
-    # testDF['alm2'] = pd.qcut(testDF['alm2'], q = a)
-
-    df = df.drop(['Sequence Name'], axis = 1)
-    dtestDFf = testDF.drop(['Sequence Name'], axis = 1)
-
-#elif userDataPath == trainData1:
 
 columnsNamesArr = df.columns.values
 targetAttribute = columnsNamesArr[-1]
