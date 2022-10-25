@@ -1,4 +1,3 @@
-from re import A
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
@@ -59,7 +58,14 @@ def buildTree(df,targetVariable, tree=None):
         entropyDF = entropyAtt(df, column , targetAttribute)
         ig.update({column:infoGain(entropyTotal, entropyDF)})
 
-    node = findWinner(ig)
+    if len(ig) == 0:
+        return tree
+    else:
+        node = findWinner(ig)
+    # print(ig)
+    # node = findWinner(ig)
+   
+
     # #Get uniques of winner attribute
     nodeCol = df.loc[:, node]
     attColValues = nodeCol.unique()
@@ -118,6 +124,8 @@ def evaluate(tree, testDF, label):
     accuracy = correct_preditct / (correct_preditct + wrong_preditct) #calculating accuracy
     return accuracy
 
+def binDF(trainData, testData):
+    return
 
 trainData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\breast-cancer-wisconsin-wLabels-train.csv"
 trainData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\letter-recognition-wLabels-train.csv"
@@ -134,19 +142,55 @@ testData5 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\lp5
 lecData = r"D:\Users\radam\Desktop\lecData.csv"
 
 
-userDataPath = trainData5
-trainDataPath = testData5
+userDataPath = trainData3
+trainDataPath = testData3
 #userDataPath = lecData
 
 #add header arguement to prevent first row from being read as labels. Enable whitespace delim line for whitespace delim datasets
 df = pd.read_csv(userDataPath)
 testDF = pd.read_csv(trainDataPath)
+
+a = 5
+b = 10
+
+if userDataPath == trainData3:
+    df['mcg'] = pd.cut(df['mcg'], bins = b)
+    df['gvh'] = pd.cut(df['gvh'], bins = 20)
+    df['aac'] = pd.cut(df['aac'], bins = a)
+    df['alm1'] = pd.cut(df['alm1'], bins = b)
+    df['alm2'] = pd.cut(df['alm2'], bins = a)
+
+    testDF['mcg'] = pd.cut(testDF['mcg'], bins = b)
+    testDF['gvh'] = pd.cut(testDF['gvh'], bins = 20)
+    testDF['aac'] = pd.cut(testDF['aac'], bins = a)
+    testDF['alm1'] = pd.cut(testDF['alm1'], bins = b)
+    testDF['alm2'] = pd.cut(testDF['alm2'], bins = a)
+
+    # df['mcg'] = pd.qcut(df['mcg'], q = a)
+    # df['gvh'] = pd.qcut(df['gvh'], q = a)
+    # df['aac'] = pd.qcut(df['aac'], q = a)
+    # df['alm1'] = pd.qcut(df['alm1'], q = a)
+    # df['alm2'] = pd.qcut(df['alm2'], q = a)
+
+    # testDF['mcg'] = pd.qcut(testDF['mcg'], q = a)
+    # testDF['gvh'] = pd.qcut(testDF['gvh'], q = a)
+    # testDF['aac'] = pd.qcut(testDF['aac'], q = a)
+    # testDF['alm1'] = pd.qcut(testDF['alm1'], q = a)
+    # testDF['alm2'] = pd.qcut(testDF['alm2'], q = a)
+
+    df = df.drop(['Sequence Name'], axis = 1)
+    dtestDFf = testDF.drop(['Sequence Name'], axis = 1)
+
+#elif userDataPath == trainData1:
+
 columnsNamesArr = df.columns.values
 targetAttribute = columnsNamesArr[-1]
 
-print(buildTree(df, targetAttribute))
+# print(buildTree(df, targetAttribute))
 tree = buildTree(df, targetAttribute)
 
 #Evaluate Accuracy of Tree
 accuracy = evaluate(tree, testDF, targetAttribute)
 print("Accuracy of Decision Tree: " + str(accuracy*100) + "%")
+
+
