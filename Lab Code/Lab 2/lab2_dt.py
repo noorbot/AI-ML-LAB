@@ -142,13 +142,13 @@ testData5 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\lp5
 lecData = r"D:\Users\radam\Desktop\lecData.csv"
 
 
-userDataPath = trainData3
-trainDataPath = testData3
-#userDataPath = lecData
+userDataPath = trainData4
+testDataPath = testData4
+userDataPath = lecData
 
 #add header arguement to prevent first row from being read as labels. Enable whitespace delim line for whitespace delim datasets
 df = pd.read_csv(userDataPath)
-testDF = pd.read_csv(trainDataPath)
+testDF = pd.read_csv(testDataPath)
 
 a = 5
 b = 10
@@ -186,7 +186,7 @@ if userDataPath == trainData3:
 columnsNamesArr = df.columns.values
 targetAttribute = columnsNamesArr[-1]
 
-# print(buildTree(df, targetAttribute))
+print(buildTree(df, targetAttribute))
 tree = buildTree(df, targetAttribute)
 
 #Evaluate Accuracy of Tree
