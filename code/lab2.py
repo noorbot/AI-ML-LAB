@@ -26,45 +26,40 @@ class_prop = []
 
 
 
-def bin_numerical_data(train_data, test_data):
-    num_bins = 20
-    num_attributes = train_data.shape[1] - 1
-    num_instances_train = train_data.shape[0]
+def bin_numerical_data(train_data, test_data): # function to split continous numerical data into bins
+    train_data_updated = train_data.copy() # make copies of train and test dataframe
+    test_data_updated = test_data.copy()
+    num_bins = 20 # number of bins to split data into
+    num_attributes = train_data.shape[1] - 1 # number of attributes in dataset
+    num_instances_train = train_data.shape[0] #number of instances and train and test sets
     num_instances_test = test_data.shape[0]
-    # determine which columns have numerical values then take range and split into x bins
-    for i in range(num_attributes):
+
+    for i in range(num_attributes): # for each colummn...
         print(is_numeric_dtype(train_data.iloc[0,i]))
         if (is_numeric_dtype(train_data.iloc[0,i])) == True:
-            max = np.max(train_data.iloc[:,i])
-            min = np.min(train_data.iloc[:,i])
-            attribute_range = max - min
-            
-            for j in range(num_instances_train):
-                print("\nvalue: " + str(train_data.iloc[j, i]))
-                for bin in range(num_bins):
-                    if train_data.iloc[j, i] >= max - (bin+1) * (attribute_range / num_bins) :
-                        train_data.loc[j, i] = max - (bin+1/2)*(attribute_range / num_bins)
-                        print("set equal to " + str(max - (bin+1/2)*(attribute_range / num_bins)))
+            max = np.max([np.max(train_data.iloc[:,i]), np.max(test_data.iloc[:,i])]) # find max value
+            min = np.min([np.min(train_data.iloc[:,i]), np.min(train_data.iloc[:,i])]) # find min value
+            attribute_range = max - min # calculate range
+
+            for l in range(num_instances_train): # for each instance, put the value into a bin
+                for bin in range(num_bins): # check through all bins
+                    if train_data.iloc[l, i] >= max - (bin+1) * (attribute_range / num_bins) : # check if its the correct bin
+                        train_data_updated.loc[l, i] = round(max - (bin+1/2)*(attribute_range / num_bins), 5) # update value to be middle of bin
                         break 
 
-    for k in range(num_attributes):
-        print(is_numeric_dtype(test_data.iloc[0,k]))
+    for k in range(num_attributes): # reapeat process for test data set
         if (is_numeric_dtype(test_data.iloc[0,k])) == True:
-            max = np.max(train_data.iloc[:,k])
-            min = np.min(train_data.iloc[:,k])
-            attribute_range = max - min
+            max = np.max([np.max(train_data.iloc[:,k]), np.max(test_data.iloc[:,k])]) # find max value
+            min = np.min([np.min(train_data.iloc[:,k]), np.min(train_data.iloc[:,k])]) # find min value
+            attribute_range = max - min  # calculate range
 
             for l in range(num_instances_test):
-                print("\nvalue: " + str(test_data.iloc[l,k]))
                 for bin in range(num_bins):
-                    print("tester: " + str(max - (bin+1) * (attribute_range / num_bins)))
-                    print("max: " + str(max) + "   birn: " + str(bin) + "    attribute range: " + str(attribute_range) + "    num bins: " + str(num_bins))
-                    if test_data.iloc[l, k] >= max - (bin+1) * (attribute_range / num_bins) :
-                        test_data.loc[l, k] = max - (bin+1/2)*(attribute_range / num_bins)
-                        print("set equal to " + str(max - (bin+1/2)*(attribute_range / num_bins)))
-                        break 
+                    if test_data.iloc[l, k] >= max - (bin+1) * (attribute_range / num_bins) : # check if its the correct bin
+                        test_data_updated.loc[l, k] = round(max - (bin+1/2)*(attribute_range / num_bins), 5) # update value to be middle of bin
+                        break             
 
-    return train_data, test_data
+    return train_data_updated, test_data_updated # return updated datasets
 
 def calc_target_entropy(dataset, num_instances, target_classes, num_target_classes):
     target_entropy = 0
@@ -247,12 +242,11 @@ def evaluate(tree, test_data):
     accuracy = correct_predict / (correct_predict + wrong_predict) #calculating accuracy
     return accuracy
 
-# train_data, test_data = bin_numerical_data(train_data, test_data)
-# print(train_data)
-# print(test_data)
 
-tree = id3(train_data)
-print(tree)
+
+train_data, test_data = bin_numerical_data(train_data, test_data)    # call  binning function
+
+tree = id3(train_data) # make decision tree from training data
 
 accuracy = evaluate(tree, test_data) #evaluating the test dataset
 print(tree)
