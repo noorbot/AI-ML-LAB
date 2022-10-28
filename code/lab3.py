@@ -10,7 +10,7 @@ k = 1
 train_data = pd.read_csv(train_file_name, header = None)
 test_data = pd.read_csv(test_file_name, header=None) #importing test dataset into dataframe
 # train_data = train_data.iloc[:100, :]
-test_data = test_data.iloc[:5, :]
+# test_data = test_data.iloc[:5, :]
 
 # count the number of attributes
 num_attributes = train_data.shape[1] - 1
@@ -22,9 +22,6 @@ print('Number of test instances: ' + str(num_test_instances))
 
 target_col = -1
 
-
-def ED():  # function to calculate Euclidean Distance
-    print('hi')
 
 
 def findNearest(train_data, test_row):
