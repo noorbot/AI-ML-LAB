@@ -4,7 +4,7 @@ import math
 
 train_file_name = "results/ecoli_train_data.csv"         # <-- change file name to match data set
 test_file_name = "results/ecoli_test_data.csv"
-k = 8
+k = 1
 
 # read from data file and save to pandas DataFrame 'data'
 train_data = pd.read_csv(train_file_name, header = None)
@@ -25,10 +25,8 @@ target_col = -1
 
 
 def findNearest(train_data, test_row):
-    # nearest = pd.DataFrame(index=np.arange(k), columns=range(2)) 
-    nearest = [0]*k
-    print(nearest)
 
+    nearest = [0]*k
     ED_array = pd.DataFrame(index=np.arange(num_train_instances), columns=range(1))
 
     for instance in range(num_train_instances):
@@ -37,22 +35,10 @@ def findNearest(train_data, test_row):
             term = (test_row.iloc[attribute] - train_data.iloc[instance,attribute])**2
             sum = sum + term
         ED = math.sqrt(sum)
-        # ED_array.loc[instance, 0] = instance
         ED_array.loc[instance, 0] = ED
         ED_array.loc[instance, 1] = train_data.iloc[instance,-1]
-        # if ED < nearest[1]:
-        #     nearest[0] = instance
-        #     nearest[1] = ED
-    print(ED_array)
-    # print("MIN index: " + str(ED_array.loc[ED_array[0].idxmin()][0]))
-    #nearest = [ED_array.idxmin()[0] , ED_array.iloc[0].min()]
-    #print("NEAREST: " + str(nearest))
-    print("SORTEDDD")
-    print(ED_array.sort_values(0)[:k])
     ED_sorted = ED_array.sort_values(0)
     nearest = ED_sorted.iloc[:k]
-    print("NEARSET ")
-    print(nearest)
     return nearest
 
 
@@ -64,8 +50,6 @@ def evaluate(train_data, test_data):
 
         nearest = findNearest(train_data, test_row)
 
-        # print(nearest)
-        # classification = train_data.iloc[nearest[0], target_col]
         classification = nearest.iloc[:,1].value_counts().idxmax()
         true_value = test_row.iloc[-1]
         print("\nclassification: " +str(classification))
