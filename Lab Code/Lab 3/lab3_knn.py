@@ -1,10 +1,27 @@
 import pandas as pd
 import numpy as np
 
-def subsetDf(df, attribute1, attribute2, targVal):
-    return df.loc[:, [attribute1, attribute2, targVal]]
+# def subsetDf(df, attribute1, attribute2, targVal):
+#     return df.loc[:, [attribute1, attribute2, targVal]]
 
-def calculateED(rowA, rowB):
+def calculateED(trainDF, testDF):
+    euclidDist = {}
+    attributes = trainDF.keys()
+    distance = 0
+
+    testQRow = 0
+    
+    testQ = trainDF.iloc[testQRow]
+    #newDF = trainDF.drop([testQRow]).reset_index(drop=True)
+    
+
+    for index, row in trainDF.iterrows():
+        
+        for index2, value in row.items():
+            print(f"Index : {index2}, Value : {value}")
+            distance += (value - awddwad)**2
+
+        euclidDist.update(distance*(1/2))
     
     
 
@@ -32,24 +49,22 @@ test = r"D:\Users\radam\Desktop\wdbc_test_data.csv"
 train = r"D:\Users\radam\Desktop\wdbc_train_data.csv"
 
 #Set dataset to build decision tree from and test
-# userDataPath = trainData1
-# testDataPath = testData1
+userDataPath = trainData2
+testDataPath = testData2
 
 #For debugging and testing the program
-userDataPath = lecData
 # userDataPath = train
 # testDataPath = test
 
 #Create dataframes using csv files
-df = pd.read_csv(userDataPath)
-#testDF = pd.read_csv(testDataPath)
+trainDF = pd.read_csv(userDataPath)
+testDF = pd.read_csv(testDataPath)
 
 #Obtain attributes of the data set and set target variable to last value of array
-columnsNamesArr = df.columns.values
+columnsNamesArr = trainDF.columns.values
 targetAttribute = columnsNamesArr[-1]
 
 k = 2;
 
-
-print(subsetDf(df, 'Outlook', 'Temperature', targetAttribute))
+calculateED(trainDF, testDF)
 
