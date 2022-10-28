@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 import math
 
-train_file_name = "results/letter_recognition_train_data.csv"         # <-- change file name to match data set
-test_file_name = "results/letter_recognition_test_data.csv"
+train_file_name = "results/ecoli_train_data.csv"         # <-- change file name to match data set
+test_file_name = "results/ecoli_test_data.csv"
 k = 1
 
 # read from data file and save to pandas DataFrame 'data'
@@ -26,16 +26,28 @@ target_col = -1
 
 def findNearest(train_data, test_row):
     nearest = [0, 10000]
+    ED_array = pd.DataFrame(index=range(num_train_instances) , columns = range(1))
+    ED_array[0] = ED_array[0].astype('float')
     for instance in range(num_train_instances):
         sum = 0
         for attribute in range(num_attributes):
             term = (test_row.iloc[attribute] - train_data.iloc[instance,attribute])**2
             sum = sum + term
         ED = math.sqrt(sum)
-        if ED < nearest[1]:
-            nearest[0] = instance
-            nearest[1] = ED
+        ED_array.loc[instance, 0] = ED
+        # if ED < nearest[1]:
+        #     nearest[0] = instance
+        #     nearest[1] = ED
+    print(ED_array)
+    print(ED_array.dtypes)
+
+    # print("MIN index: " + str(ED_array.loc[ED_array[0].idxmin()][0]))
+    print("MIN: " + str(ED_array.idxmin()[0]))
+    print("MIN: " + str(ED_array.iloc[0].min()))
+    nearest = [ED_array.idxmin()[0] , ED_array.iloc[0].min()]
+    print("NEAREST: " + str(nearest))
     return nearest
+
 
 def evaluate(train_data, test_data):
     correct_predict = 0
