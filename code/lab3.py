@@ -2,15 +2,15 @@ import pandas as pd
 import numpy as np
 import math
 
-train_file_name = "results/ecoli_train_data.csv"         # <-- change file name to match data set
-test_file_name = "results/ecoli_test_data.csv"
+train_file_name = "results/letter_recognition_train_data.csv"         # <-- change file name to match data set
+test_file_name = "results/letter_recognition_test_data.csv"
 k = 1
 
 # read from data file and save to pandas DataFrame 'data'
 train_data = pd.read_csv(train_file_name, header = None)
 test_data = pd.read_csv(test_file_name, header=None) #importing test dataset into dataframe
 # train_data = train_data.iloc[:100, :]
-# test_data = test_data.iloc[:5, :]
+test_data = test_data.iloc[:800, :]
 
 # count the number of attributes
 num_attributes = train_data.shape[1] - 1
@@ -59,19 +59,16 @@ def evaluate(train_data, test_data):
             correct_predict += 1 #increase correct count
         else:
             wrong_predict += 1 #increase incorrect count
+        current_accuracy =  accuracy = correct_predict / (correct_predict + wrong_predict)
+        print("Accuracy at test #" + str(instance) + ": " + str(current_accuracy))
     accuracy = correct_predict / (correct_predict + wrong_predict) #calculating accuracy
     return accuracy
 
 
 
-# nearest = findNearest(train_data, test_data)
-
 accuracy = evaluate(train_data, test_data)
 print("\nAccuracy: " + str(accuracy))
 
 
-
-
-
-
-
+# Tim!! What time are you heading over to Matt's?
+# ok sick i do not
