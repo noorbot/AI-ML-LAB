@@ -20,37 +20,37 @@ print('\nNumber of attributes: ' + str(num_attributes))
 print('Number of train instances: ' + str(num_train_instances))
 print('Number of test instances: ' + str(num_test_instances))
 
-target_col = -1
+target_col = -1 # set rightmost column to to target variable column
 
 
 
-def findNearest(train_data, test_row):
+def findNearest(train_data, test_row): # method that find the k nearest neighbours using Euclidean Distance
 
     nearest = [0]*k
     ED_array = pd.DataFrame(index=np.arange(num_train_instances), columns=range(1))
 
-    for instance in range(num_train_instances):
+    for instance in range(num_train_instances): # compare the test instance against each train instance
         sum = 0
-        for attribute in range(num_attributes):
-            term = (test_row.iloc[attribute] - train_data.iloc[instance,attribute])**2
+        for attribute in range(num_attributes): # for each attribute...
+            term = (test_row.iloc[attribute] - train_data.iloc[instance,attribute])**2 # calculation of Euclidean distance (ED)
             sum = sum + term
         ED = math.sqrt(sum)
-        ED_array.loc[instance, 0] = ED
+        ED_array.loc[instance, 0] = ED # use ED_array to keep track of ED for each test instance
         ED_array.loc[instance, 1] = train_data.iloc[instance,-1]
-    ED_sorted = ED_array.sort_values(0)
-    nearest = ED_sorted.iloc[:k]
+    ED_sorted = ED_array.sort_values(0) # sort the ED_array ascending to find the smallest EDs/ nearest neighbours
+    nearest = ED_sorted.iloc[:k] # take the k nearest
     return nearest
 
 
-def evaluate(train_data, test_data):
+def evaluate(train_data, test_data): # method to feed in test instances and calculate algorithm accuracy
     correct_predict = 0
     wrong_predict = 0
-    for instance in range(num_test_instances):
-        test_row = test_data.iloc[instance,:]
+    for instance in range(num_test_instances):  # for each test instance ...
+        test_row = test_data.iloc[instance,:] # take the row of interest
 
-        nearest = findNearest(train_data, test_row)
+        nearest = findNearest(train_data, test_row) # feed this instance into the findNearest() method
 
-        classification = nearest.iloc[:,1].value_counts().idxmax()
+        classification = nearest.iloc[:,1].value_counts().idxmax() # clasify it by using the target variable class that is most common in the k nearest
         true_value = test_row.iloc[-1]
         print("\nclassification: " +str(classification))
         print("true value: " + str(true_value))
