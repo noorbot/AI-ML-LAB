@@ -4,7 +4,7 @@ import math
 
 train_file_name = "results/letter_recognition_train_data.csv"         # <-- change file name to match data set
 test_file_name = "results/letter_recognition_test_data.csv"
-k = 1 # <-- set k value
+k = 3 # <-- set k value
 
 # read from data file and save to pandas DataFrame 'data'
 train_data = pd.read_csv(train_file_name, header = None)
