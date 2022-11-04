@@ -4,48 +4,46 @@ import numpy as np
 # def subsetDf(df, attribute1, attribute2, targVal):
 #     return df.loc[:, [attribute1, attribute2, targVal]]
 
-def calculateED(x1, x2):
-    # euclidDist = {}
+#Returns the norm of row
+def calculateED(rowTrain, rowTest):
+    elementSum = 0
+
+    for index, x1 in rowTrain.items():
+        x2 = rowTest.iloc[index]
+        elementSum += ((x1-x2)**2)
+
+    dist = np.sqrt(elementSum)
+
+    return  dist
+
+def knn(trainDF, testDF, k):
+
+    euclidDist = []
     # attributes = trainDF.keys()
     # distance = 0
 
     # testQRow = 0
     
     # testQ = trainDF.iloc[testQRow]
-    # #newDF = trainDF.drop([testQRow]).reset_index(drop=True)
-    
+    #newDF = trainDF.drop([testQRow]).reset_index(drop=True)
+    testRow = testDF.iloc[0]
 
+    for index, row in trainDF.iterrows():
+        #testRow = testDF.iloc[index]
+        euclidDist.append(calculateED(testRow,row))
+
+    euclidDist.sort()
+    neighbours = []
+    for i in range(k):
+        neighbours.append(euclidDist[i])
     # for index, row in trainDF.iterrows():
-        
     #     for index2, value in row.items():
     #         print(f"Index : {index2}, Value : {value}")
     #         distance += (value - awddwad)**2
 
     #     euclidDist.update(distance*(1/2))
 
-    return np.sqrt(np.sum((x1-x2)**2))
-
-def knn(trainDF, testDF, k):
-
-    euclidDist = {}
-    attributes = trainDF.keys()
-    distance = 0
-
-    testQRow = 0
-    
-    testQ = trainDF.iloc[testQRow]
-    #newDF = trainDF.drop([testQRow]).reset_index(drop=True)
-    
-
-    for index, row in trainDF.iterrows():
-        
-        for index2, value in row.items():
-            print(f"Index : {index2}, Value : {value}")
-            distance += (value - awddwad)**2
-
-        euclidDist.update(distance*(1/2))
-
-    return
+    return neighbours
 
 
 #File paths for training datasets
@@ -85,5 +83,5 @@ targetAttribute = columnsNamesArr[-1]
 
 k = 2;
 
-calculateED(trainDF, testDF)
+#calculateED(trainDF, testDF)
 
