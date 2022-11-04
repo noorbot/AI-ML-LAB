@@ -40,18 +40,6 @@ def knn(testRow, trainDF, k):
 
     return neighbour
 
-# def findNeighbour(neighbour):
-#     df = pd.DataFrame(neighbour)
-#     counts = df[0].value_counts().idxmax()
-#     return counts
-
-# Make a classification prediction with neighbors
-def predict_classification(train, test_row, num_neighbors):
-	neighbors = knn(train, test_row, num_neighbors)
-	output_values = [row[-1] for row in neighbors]
-	prediction = max(set(output_values), key=output_values.count)
-	return prediction
-
 def evaluate(trainDF, testDF, k): # method to feed in test instances and calculate algorithm accuracy
     correct_predict = 0
     wrong_predict = 0
