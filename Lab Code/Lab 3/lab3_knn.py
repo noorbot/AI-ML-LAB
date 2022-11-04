@@ -4,7 +4,29 @@ import numpy as np
 # def subsetDf(df, attribute1, attribute2, targVal):
 #     return df.loc[:, [attribute1, attribute2, targVal]]
 
-def calculateED(trainDF, testDF):
+def calculateED(x1, x2):
+    # euclidDist = {}
+    # attributes = trainDF.keys()
+    # distance = 0
+
+    # testQRow = 0
+    
+    # testQ = trainDF.iloc[testQRow]
+    # #newDF = trainDF.drop([testQRow]).reset_index(drop=True)
+    
+
+    # for index, row in trainDF.iterrows():
+        
+    #     for index2, value in row.items():
+    #         print(f"Index : {index2}, Value : {value}")
+    #         distance += (value - awddwad)**2
+
+    #     euclidDist.update(distance*(1/2))
+
+    return np.sqrt(np.sum((x1-x2)**2))
+
+def knn(trainDF, testDF, k):
+
     euclidDist = {}
     attributes = trainDF.keys()
     distance = 0
@@ -22,11 +44,8 @@ def calculateED(trainDF, testDF):
             distance += (value - awddwad)**2
 
         euclidDist.update(distance*(1/2))
-    
-    
 
     return
-
 
 
 #File paths for training datasets
