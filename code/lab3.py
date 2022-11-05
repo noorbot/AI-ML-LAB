@@ -68,7 +68,3 @@ def evaluate(train_data, test_data): # method to feed in test instances and calc
 
 accuracy = evaluate(train_data, test_data) # call the algorithm
 print("\nAccuracy: " + str(accuracy))
-
-
-# Tim!! What time are you heading over to Matt's?
-# ok sick i do not
