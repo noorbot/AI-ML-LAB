@@ -4,7 +4,7 @@ import numpy as np
 
 train_file_name = "results/mushroom_train_data.csv"         # <-- change file name to match data set
 test_file_name = "results/mushroom_test_data.csv"
-k = 5 # <-- set k value
+k = 8 # <-- set k value
 
 # read from data file and save to pandas DataFrame 'data'
 train_data = pd.read_csv(train_file_name, header = None)
