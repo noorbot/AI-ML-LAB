@@ -28,16 +28,22 @@ num_target_classes = np.count_nonzero(target_classes)
     
 
 def calc_target_var_probs(train_data):
-    target_var_probs = pd.DataFrame(index=np.arange(num_target_classes), columns=range(2))
+    #target_var_probs = pd.DataFrame(index=np.arange(num_target_classes), columns=range(2))
+    target_var_probs = pd.DataFrame(columns=['target class', 'count', 'P'])
 
     for i, t_class in zip(range(num_target_classes), target_classes):
-        target_var_probs.loc[i, 0] = t_class # save name of target class to first column
-        prop = train_data.iloc[:,-1].value_counts()[t_class] / num_train_instances
-        target_var_probs.loc[i, 1] = prop  # save probability of this target class in second column
+        # target_var_probs.loc[i, 0] = t_class # save name of target class to first column
+        # prop = train_data.iloc[:,-1].value_counts()[t_class] / num_train_instances
+        # target_var_probs.loc[i, 1] = prop  # save probability of this target class in second column
+
+        count = train_data.iloc[:,-1].value_counts()[t_class]
+        prop = count / num_train_instances
+        new_row = pd.DataFrame([{'target class' : t_class, 'count' : count, 'P' : prop}])
+        target_var_probs = pd.concat([target_var_probs, new_row], axis=0, ignore_index=True)
     return target_var_probs
 
 
-def calc_attribute_probs(train_data):
+def calc_attribute_probs(train_data, target_var_probs):
     attribute_probs = pd.DataFrame(columns=['attribute', 'a_class', 't_class', 'P'])
 
     for n_attribute in range(num_attributes):
@@ -47,8 +53,9 @@ def calc_attribute_probs(train_data):
         for i, a_class in zip(range(num_attribute_classes), attribute_classes):
 
             for j, t_class in zip(range(num_target_classes), target_classes):
-                
-                new_row = pd.DataFrame([{'attribute': n_attribute, 'a_class' : a_class, 't_class' : t_class, 'P' :"hi"}])
+                count = len(train_data[(train_data.iloc[:,n_attribute]==a_class) & (train_data.iloc[:,-1]==t_class)])
+                prop = count / target_var_probs.iloc[j,1]
+                new_row = pd.DataFrame([{'attribute': n_attribute, 'a_class' : a_class, 't_class' : t_class, 'P' : prop}])
                 attribute_probs = pd.concat([attribute_probs, new_row], axis=0, ignore_index=True)
 
     return(attribute_probs)
@@ -97,10 +104,10 @@ def evaluate(train_data, test_data): # method to feed in test instances and calc
     return accuracy
 
 
-array = calc_target_var_probs(train_data)
-print(array)
+target_var_probs = calc_target_var_probs(train_data)
+print(target_var_probs)
 
-attribute_array = calc_attribute_probs(train_data)
+attribute_array = calc_attribute_probs(train_data, target_var_probs)
 print(attribute_array)
 
 # accuracy = evaluate(train_data, test_data) # call the algorithm
