@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 import math
 
-train_file_name = "data/example.csv"         # <-- change file name to match data set
-test_file_name = "data/example_test.csv"
+train_file_name = "results/mushroom_train_data.csv"         # <-- change file name to match data set
+test_file_name = "results/mushroom_test_data.csv"
 
 # read from data file and save to pandas DataFrame 'data'
 train_data = pd.read_csv(train_file_name, header = None)
 test_data = pd.read_csv(test_file_name, header=None) #importing test dataset into dataframe
 # train_data = train_data.iloc[:100, :]
-# test_data = test_data.iloc[:800, :]
+# test_data = test_data.iloc[:20, :]
 
 # count the number of attributes
 num_attributes = train_data.shape[1] - 1
@@ -76,7 +76,7 @@ def calculateBayes(target_var_probs, attribute_probs, test_row):
         for n_attribute in range(num_attributes): # for each attribute...
             attribute_val = test_row[n_attribute]
             # print("attribute: " + str(attribute_val)); print('t_class: ' + str(t_class))
-            term = attribute_probs.loc[(attribute_probs.loc[:,'a_class'] == attribute_val) & (attribute_probs.loc[:,'t_class']==t_class)]
+            term = attribute_probs.loc[(attribute_probs.loc[:,'attribute'] == n_attribute) & (attribute_probs.loc[:,'a_class'] == attribute_val) & (attribute_probs.loc[:,'t_class']==t_class)]
             # print('TERM') ; print(term)
             P = term.iat[0,3]
             # print(P)
@@ -85,10 +85,10 @@ def calculateBayes(target_var_probs, attribute_probs, test_row):
         new_row = pd.DataFrame([{'t_class' : t_class,'bayes' : bayes}])
         bayes_df = pd.concat([bayes_df, new_row], axis=0, ignore_index=True)
         
-    print(bayes_df)
+    # print(bayes_df)
     bayes_sorted = bayes_df.sort_values('bayes', ascending=False) # sort the ED_array ascending to find the smallest EDs/ nearest neighbours
     nearest = bayes_sorted.iloc[:1] # take the top row
-    print(nearest)
+    # print(nearest)
     return nearest
 
 
