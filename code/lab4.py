@@ -62,21 +62,33 @@ def calc_attribute_probs(train_data, target_var_probs):
 
 
 
-def calculateBayes(train_data, test_row):
+def calculateBayes(target_var_probs, attribute_probs, test_row):
 
-    nearest = [0]*k
-    ED_array = pd.DataFrame(index=np.arange(num_train_instances), columns=range(1))
+    nearest = [0]
+    #bayes_array = pd.DataFrame(index=[target_classes], columns=range(num_attributes+3))
+    bayes_df = pd.DataFrame(columns=['t_class','bayes'])
+    # print(bayes_df)
 
-    for instance in range(num_train_instances): # compare the test instance against each train instance
-        sum = 0
-        for attribute in range(num_attributes): # for each attribute...
-            term = (test_row.iloc[attribute] - train_data.iloc[instance,attribute])**2 # calculation of Euclidean distance (ED)
-            sum = sum + term
-        ED = math.sqrt(sum)
-        ED_array.loc[instance, 0] = ED # use ED_array to keep track of ED for each test instance
-        ED_array.loc[instance, 1] = train_data.iloc[instance,-1]
-    ED_sorted = ED_array.sort_values(0) # sort the ED_array ascending to find the smallest EDs/ nearest neighbours
-    nearest = ED_sorted.iloc[:k] # take the k nearest
+    for i, t_class in zip(range(num_target_classes), target_classes): # compare the test instance against each train instance
+        bayes = 1
+        bayes = bayes * target_var_probs.iloc[i,2]
+
+        for n_attribute in range(num_attributes): # for each attribute...
+            attribute_val = test_row[n_attribute]
+            # print("attribute: " + str(attribute_val)); print('t_class: ' + str(t_class))
+            term = attribute_probs.loc[(attribute_probs.loc[:,'a_class'] == attribute_val) & (attribute_probs.loc[:,'t_class']==t_class)]
+            # print('TERM') ; print(term)
+            P = term.iat[0,3]
+            # print(P)
+            bayes = bayes *P
+
+        new_row = pd.DataFrame([{'t_class' : t_class,'bayes' : bayes}])
+        bayes_df = pd.concat([bayes_df, new_row], axis=0, ignore_index=True)
+        
+    print(bayes_df)
+    bayes_sorted = bayes_df.sort_values('bayes', ascending=False) # sort the ED_array ascending to find the smallest EDs/ nearest neighbours
+    nearest = bayes_sorted.iloc[:1] # take the top row
+    print(nearest)
     return nearest
 
 
@@ -87,9 +99,9 @@ def evaluate(train_data, test_data): # method to feed in test instances and calc
     for instance in range(num_test_instances):  # for each test instance ...
         test_row = test_data.iloc[instance,:] # take the row of interest
 
-        nearest = calculateBayes(train_data, test_row)  # feed this instance into the findNearest() method
+        nearest = calculateBayes(target_var_probs, attribute_probs, test_row)  # feed this instance into the findNearest() method
 
-        classification = nearest.iloc[:,1].value_counts().idxmax() # clasify it by using the target variable class that is most common in the k nearest
+        classification = nearest.iloc[0,0]
         true_value = test_row.iloc[-1]
         print("\nclassification: " +str(classification))
         print("true value: " + str(true_value))
@@ -107,8 +119,8 @@ def evaluate(train_data, test_data): # method to feed in test instances and calc
 target_var_probs = calc_target_var_probs(train_data)
 print(target_var_probs)
 
-attribute_array = calc_attribute_probs(train_data, target_var_probs)
-print(attribute_array)
+attribute_probs = calc_attribute_probs(train_data, target_var_probs)
+print(attribute_probs)
 
-# accuracy = evaluate(train_data, test_data) # call the algorithm
-# print("\nAccuracy: " + str(accuracy))
+accuracy = evaluate(train_data, test_data) # call the algorithm
+print("\nAccuracy: " + str(accuracy))
