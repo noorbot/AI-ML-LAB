@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 import math
 
-train_file_name = "results/mushroom_train_data.csv"         # <-- change file name to match data set
-test_file_name = "results/mushroom_test_data.csv"
+train_file_name = "results/letter_recognition_train_data.csv"         # <-- change file name to match data set
+test_file_name = "results/letter_recognition_test_data.csv"
 
 # read from data file and save to pandas DataFrame 'data'
 train_data = pd.read_csv(train_file_name, header = None)
 test_data = pd.read_csv(test_file_name, header=None) #importing test dataset into dataframe
 # train_data = train_data.iloc[:100, :]
-# test_data = test_data.iloc[:20, :]
+# test_data = test_data.iloc[:1, :]
 
 # count the number of attributes
 num_attributes = train_data.shape[1] - 1
@@ -78,7 +78,10 @@ def calculateBayes(target_var_probs, attribute_probs, test_row):
             # print("attribute: " + str(attribute_val)); print('t_class: ' + str(t_class))
             term = attribute_probs.loc[(attribute_probs.loc[:,'attribute'] == n_attribute) & (attribute_probs.loc[:,'a_class'] == attribute_val) & (attribute_probs.loc[:,'t_class']==t_class)]
             # print('TERM') ; print(term)
-            P = term.iat[0,3]
+            if term.empty:
+                P=0
+            else:
+                P = term.iat[0,3]
             # print(P)
             bayes = bayes *P
 
