@@ -2,17 +2,32 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 
-def calcPrior(trainDF, attVari):
+def calcPrior(trainDF, targVari):
     prior = []
-    attData = trainDF[attVari].unique()
+    attData = trainDF[targVari].unique()
 
     for data in attData:
-        subsetDF = trainDF[trainDF[attVari]==data]
+        subsetDF = trainDF[trainDF[targVari]==data]
         prior.append(len(subsetDF)/len(trainDF))
 
     return prior
 
+def calcLikelihood(trainDF, attVari, attData, targVari, targData):
+    subsetDF = trainDF[trainDF[targVari]==targData]
+    likelihood = len(trainDF[trainDF[attVari]==attData]) / len(subsetDF)
+    return likelihood
 
+def naiveBayes(trainDF):
+    attList = trainDF.keys()
+
+    prior = calcPrior(trainDF, attList[-1])
+
+    dataRowsList = trainDF.iloc[:,:-1].values
+
+    for data in  dataRowsList:
+        
+
+    return
 
 #File paths for training datasets
 trainData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\wdbc_train_data.csv"
@@ -59,6 +74,10 @@ classes2 = list(trainDF['Outlook'].unique())
 
 test2 = trainDF['Outlook'].unique()
 
-test = trainDF[trainDF['Outlook'] == 'Sunny']
+test = trainDF[trainDF['Play Tennis'] == 'No']
+
+test_x = trainDF.iloc[:,:-1].values
+test_y = trainDF.iloc[:,-1].values
+print(test)
 
 calcPrior(trainDF, listOfAtt[-1])
