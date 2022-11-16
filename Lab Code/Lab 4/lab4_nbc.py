@@ -14,7 +14,8 @@ def calcPrior(trainDF, targVari):
 
 def calcLikelihood(trainDF, attVari, attData, targVari, targData):
     subsetDF = trainDF[trainDF[targVari]==targData]
-    likelihood = len(trainDF[trainDF[attVari]==attData]) / len(subsetDF)
+    likelihood = len(subsetDF[subsetDF[attVari]==attData]) / len(subsetDF)
+    print(subsetDF[subsetDF[attVari]==attData])
     return likelihood
 
 def naiveBayes(trainDF):
@@ -102,5 +103,6 @@ test_y = trainDF.iloc[:,-1].values
 subsetDF = trainDF.drop([listOfAtt[-1]], axis=1)
 
 #naiveBayes(trainDF)
-print(calcLikelihood(trainDF, 'Outlook', 'Sunny', 'Play Tennis', 'No'))
-print(calcLikelihood(trainDF, 'Outlook', 'Sunny', 'Play Tennis', 'Yes'))
+# print(calcLikelihood(trainDF, 'Outlook', 'Sunny', 'Play Tennis', 'No'))
+# print(calcLikelihood(trainDF, 'Outlook', 'Sunny', 'Play Tennis', 'Yes'))
+calcLikelihood(trainDF, 'Outlook', 'Sunny', 'Play Tennis', 'No')
