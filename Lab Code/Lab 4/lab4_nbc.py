@@ -2,6 +2,18 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 
+def calcPrior(trainDF, attVari):
+    prior = []
+    attData = trainDF[attVari].unique()
+
+    for data in attData:
+        subsetDF = trainDF[trainDF[attVari]==data]
+        prior.append(len(subsetDF)/len(trainDF))
+
+    return prior
+
+
+
 #File paths for training datasets
 trainData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\wdbc_train_data.csv"
 trainData2 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\letter-recognition-wLabels-train.csv"
@@ -18,17 +30,35 @@ testData5 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab
 
 #Debugging datasets
 lecData = r"D:\Users\radam\Desktop\lecData.csv"
+testData = r"D:\Users\radam\Desktop\test.csv"
 test = r"D:\Users\radam\Desktop\wdbc_test_data.csv"
 train = r"D:\Users\radam\Desktop\wdbc_train_data.csv"
 
 #Set dataset to build decision tree from and test
-trainDataPath = trainData5
-testDataPath = testData5
+# trainDataPath = trainData5
+# testDataPath = testData5
 
 #For debugging and testing the program
-# userDataPath = train
-# testDataPath = test
+userDataPath = lecData
+testDataPath = testData
+
+#Debug dataframes using csv files
+trainDF = pd.read_csv(userDataPath)
+testDF = pd.read_csv(testDataPath)
 
 #Create dataframes using csv files
-trainDF = pd.read_csv(trainDataPath)
-testDF = pd.read_csv(testDataPath)
+# trainDF = pd.read_csv(trainDataPath)
+# testDF = pd.read_csv(testDataPath)
+
+#print(trainDF)
+
+listOfAtt = trainDF.keys()
+
+classes = sorted(list(trainDF['Outlook'].unique()))
+classes2 = list(trainDF['Outlook'].unique())
+
+test2 = trainDF['Outlook'].unique()
+
+test = trainDF[trainDF['Outlook'] == 'Sunny']
+
+calcPrior(trainDF, listOfAtt[-1])
