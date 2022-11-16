@@ -18,14 +18,32 @@ def calcLikelihood(trainDF, attVari, attData, targVari, targData):
     return likelihood
 
 def naiveBayes(trainDF):
+    likelihood = []
     attList = trainDF.keys()
+    targData = trainDF[attList[-1]].unique()
 
     prior = calcPrior(trainDF, attList[-1])
 
-    dataRowsList = trainDF.iloc[:,:-1].values
+    #dataRowsList = trainDF.iloc[:,:-1].values
 
-    for data in  dataRowsList:
-        
+    # dataRowsDF = trainDF.drop([listOfAtt[-1]], axis=1)
+
+    # for indexTrain, rowTrain in dataRowsDF.iterrows():
+    #     dataRowsTuples = list(rowTrain.items())
+
+    for indexTrain, rowTrain in trainDF.iterrows():
+        dataRowsTuples = list(rowTrain.items())
+        for i in range (len(dataRowsTuples)):
+            likelihood.append(calcLikelihood(trainDF, dataRowsTuples[i][0], dataRowsTuples[i][1], attList[-1], trainDF.loc[indexTrain, attList[-1]]))
+    
+    # for i in range (len(likelihood)):
+    #     posterior =
+
+    # print(dataRowsTuples)
+    # # for i in range (len(dataRowsTuples)):
+    # #     print(dataRowsTuples[0][0])
+    # for k, v in dataRowsTuples:
+    #     print(k, v)
 
     return
 
@@ -78,6 +96,11 @@ test = trainDF[trainDF['Play Tennis'] == 'No']
 
 test_x = trainDF.iloc[:,:-1].values
 test_y = trainDF.iloc[:,-1].values
-print(test)
+#print(test_x)
 
-calcPrior(trainDF, listOfAtt[-1])
+#print(calcPrior(trainDF, listOfAtt[-1]))
+subsetDF = trainDF.drop([listOfAtt[-1]], axis=1)
+
+#naiveBayes(trainDF)
+print(calcLikelihood(trainDF, 'Outlook', 'Sunny', 'Play Tennis', 'No'))
+print(calcLikelihood(trainDF, 'Outlook', 'Sunny', 'Play Tennis', 'Yes'))
