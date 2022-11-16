@@ -15,13 +15,13 @@ def calcPrior(trainDF, targVari):
 def calcLikelihood(trainDF, attVari, attData, targVari, targData):
     subsetDF = trainDF[trainDF[targVari]==targData]
     likelihood = len(subsetDF[subsetDF[attVari]==attData]) / len(subsetDF)
-    print(subsetDF[subsetDF[attVari]==attData])
     return likelihood
 
-def naiveBayes(trainDF):
-    likelihood = []
+def naiveBayes(trainDF, testDF):
+    likelihoodTotal = []
     attList = trainDF.keys()
     targData = trainDF[attList[-1]].unique()
+    calculatedTuple = 1
 
     prior = calcPrior(trainDF, attList[-1])
 
@@ -32,11 +32,19 @@ def naiveBayes(trainDF):
     # for indexTrain, rowTrain in dataRowsDF.iterrows():
     #     dataRowsTuples = list(rowTrain.items())
 
-    for indexTrain, rowTrain in trainDF.iterrows():
+    for indexTrain, rowTrain in testDF.iterrows():
         dataRowsTuples = list(rowTrain.items())
-        for i in range (len(dataRowsTuples)):
-            likelihood.append(calcLikelihood(trainDF, dataRowsTuples[i][0], dataRowsTuples[i][1], attList[-1], trainDF.loc[indexTrain, attList[-1]]))
+        likelihood = []
+        calculatedTuple = 1
+        for i in range ((len(dataRowsTuples) -1)):
+            calculatedTuple *= calcLikelihood(trainDF, dataRowsTuples[i][0], dataRowsTuples[i][1], attList[-1], trainDF.loc[indexTrain, attList[-1]])
+
+            #likelihoodTotal.append(tuple([dataRowsTuples[i][1],trainDF.loc[indexTrain, attList[-1]], calculatedTuple]))
+        likelihoodTotal.append(tuple([indexTrain, trainDF.loc[indexTrain, attList[-1]], calculatedTuple]))
     
+        
+    
+    print(likelihoodTotal)
     # for i in range (len(likelihood)):
     #     posterior =
 
@@ -102,7 +110,11 @@ test_y = trainDF.iloc[:,-1].values
 #print(calcPrior(trainDF, listOfAtt[-1]))
 subsetDF = trainDF.drop([listOfAtt[-1]], axis=1)
 
-#naiveBayes(trainDF)
+testDF = trainDF
+
+naiveBayes(trainDF, testDF)
+
+
+
 # print(calcLikelihood(trainDF, 'Outlook', 'Sunny', 'Play Tennis', 'No'))
 # print(calcLikelihood(trainDF, 'Outlook', 'Sunny', 'Play Tennis', 'Yes'))
-calcLikelihood(trainDF, 'Outlook', 'Sunny', 'Play Tennis', 'No')
