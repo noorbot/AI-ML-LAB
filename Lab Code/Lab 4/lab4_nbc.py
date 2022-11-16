@@ -3,12 +3,14 @@ import numpy as np
 from tqdm import tqdm
 
 def calcPrior(trainDF, targVari):
-    prior = []
+    prior = {}
+    # prior = []
     attData = trainDF[targVari].unique()
 
     for data in attData:
         subsetDF = trainDF[trainDF[targVari]==data]
-        prior.append(len(subsetDF)/len(trainDF))
+        # prior.append(len(subsetDF)/len(trainDF))
+        prior.update({data:len(subsetDF)/len(trainDF)})
 
     return prior
 
@@ -19,6 +21,7 @@ def calcLikelihood(trainDF, attVari, attData, targVari, targData):
 
 def naiveBayes(trainDF, testDF):
     likelihoodTotal = []
+    posterior = []
     attList = trainDF.keys()
     targData = trainDF[attList[-1]].unique()
     calculatedTuple = 1
@@ -38,23 +41,23 @@ def naiveBayes(trainDF, testDF):
         calculatedTuple = 1
         for i in range ((len(dataRowsTuples) -1)):
             calculatedTuple *= calcLikelihood(trainDF, dataRowsTuples[i][0], dataRowsTuples[i][1], attList[-1], trainDF.loc[indexTrain, attList[-1]])
-
             #likelihoodTotal.append(tuple([dataRowsTuples[i][1],trainDF.loc[indexTrain, attList[-1]], calculatedTuple]))
-        likelihoodTotal.append(tuple([indexTrain, trainDF.loc[indexTrain, attList[-1]], calculatedTuple]))
+        #likelihoodTotal.append(tuple([indexTrain, trainDF.loc[indexTrain, attList[-1]], calculatedTuple]))
+        likelihoodTotal.append(tuple([trainDF.loc[indexTrain, attList[-1]], calculatedTuple]))      
     
-        
-    
-    print(likelihoodTotal)
-    # for i in range (len(likelihood)):
-    #     posterior =
+
+    for i in range ((len(likelihoodTotal))):
+        posterior_value = likelihoodTotal[i][1] * prior[likelihoodTotal[i][0]]
+        posterior.append(tuple([likelihoodTotal[i][0], posterior_value]))
 
     # print(dataRowsTuples)
     # # for i in range (len(dataRowsTuples)):
     # #     print(dataRowsTuples[0][0])
     # for k, v in dataRowsTuples:
     #     print(k, v)
-
-    return
+    #posterior.sort(key=lambda a: a[1])
+    max_tuple = max(posterior, key=lambda tup: tup[1])
+    print(max_tuple[0])
 
 #File paths for training datasets
 trainData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\wdbc_train_data.csv"
