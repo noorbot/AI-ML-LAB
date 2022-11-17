@@ -52,7 +52,7 @@ def naiveBayes(trainDF, testDF):
     #The prior probablity is then multipled to the correct likelihoods by passing targData[i] as a key for the prior dictionary. This is then appended as the
     #posterior probability. After a single row instance is finished, the variables are reset to take in the next row instance.
     #Implemented TQDM properly compared to Lab 3 to show a progress bar when executing the program
-    for testInst in tqdm(testRows, desc="Naive Bayes Classifier - Dataset"):
+    for testInst in tqdm(testRows, desc="Naive Bayes Classifier - Executing"):
         posterior = []
         for i in range (len(targData)):
             liklihoodInst = 1
