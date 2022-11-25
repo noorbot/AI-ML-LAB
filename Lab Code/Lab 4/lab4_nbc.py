@@ -103,8 +103,8 @@ test = r"D:\Users\radam\Desktop\wdbc_test_data.csv"
 train = r"D:\Users\radam\Desktop\wdbc_train_data.csv"
 
 #Set dataset to build decision tree from and test
-trainDataPath = trainData5
-testDataPath = testData5
+trainDataPath = trainData4
+testDataPath = testData4
 
 #For debugging and testing the program
 # userDataPath = lecData
