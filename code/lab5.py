@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 
-data_file_name = "data/lab5/letter_recognition.csv"     # <-- change file name to match data set
+data_file_name = "data/lab5/lp5.csv"     # <-- change file name to match data set
 
 data = pd.read_csv(data_file_name, header = None)          # read from data file and save to pandas DataFrames
 
