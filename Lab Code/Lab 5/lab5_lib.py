@@ -1,13 +1,12 @@
 import pandas as pd
-import numpy as np
 from tqdm import tqdm
 
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
-from sklearn.model_selection import KFold, cross_val_score
-from sklearn.metrics import classification_report,confusion_matrix
+from sklearn.model_selection import cross_val_score
 from sklearn import neighbors, tree
 from sklearn.naive_bayes import GaussianNB
+from sklearn.preprocessing import LabelEncoder
 
 #File paths for training datasets
 trainData1 = r"D:\Users\radam\Desktop\ENGR 3150U Lab Files\AI-ML-LAB\Datasets\Lab 2 Datasets\wdbc_train_data.csv"
@@ -31,28 +30,37 @@ test = r"D:\Users\radam\Desktop\wdbc_test_data.csv"
 train = r"D:\Users\radam\Desktop\wdbc_train_data.csv"
 
 #Set dataset to build decision tree from and test
-trainDataPath = trainData2
-testDataPath = testData2
+print("A: WDBC")
+print("B: LETTER RECOGNITION")
+print("C: ECOLI")
+print("D: MUSHROOM")
+print("E: ROBOT FAILURES - LP5")
+userInput = input("Please Select a Dataset: ")
+wrongFlag = False
 
-#For debugging and testing the program
-# userDataPath = lecData
-# #testDataPath = testData
-# testDataPath= lecDataTest
-
-#Debu9g dataframes using csv files
-# trainDF = pd.read_csv(userDataPath)
-# testDF = pd.read_csv(testDataPath)
-
-#Create dataframes using csv files
-# df = pd.read_csv(ogData1)
-
-# from sklearn.neural_network import MLPClassifier
-
-# mlp = MLPClassifier(hidden_layer_sizes=(8,8,8), activation='relu', solver='adam', max_iter=500)
-# mlp.fit(X_train,y_train)
-
-# predict_train = mlp.predict(X_train)
-# predict_test = mlp.predict(X_test)
+if userInput == "A" or userInput == "a":
+    trainDataPath = trainData1
+    testDataPath = testData1
+    print("WDNC")
+elif userInput == "B" or userInput == "b":
+    trainDataPath = trainData2
+    testDataPath = testData2
+    print("LR")
+elif userInput == "C" or userInput ==  "c":
+    trainDataPath = trainData3
+    testDataPath = testData3
+    print("EC")
+elif userInput == "D" or userInput ==  "d":
+    trainDataPath = trainData4
+    testDataPath = testData4
+    print("MUSH")
+elif userInput == "E" or  userInput == "e":
+    trainDataPath = trainData5
+    testDataPath = testData5
+    print("ROBOT FAILURE")
+else:
+    wrongFlag = True
+    print("WTF")
 
 trainDF = pd.read_csv(trainDataPath)
 testDF = pd.read_csv(testDataPath)
@@ -64,12 +72,19 @@ listOfAtt = result.keys()
 targetVar = listOfAtt[-1]
 features = listOfAtt[:-1]
 
+labelencoder = LabelEncoder()
+for col in features:
+    result[col] = labelencoder.fit_transform(result[col])
+
+print(result)
+
 X = result[features].values
 y = result[targetVar].values
 
 numOfNeurons = len(features)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=50)
+
 
 # print("1: Decision Trees")
 # print("2: KNN")
@@ -120,21 +135,3 @@ clf.fit(X_train,y_train)
 scores = cross_val_score(clf, X, y)
 print("%0.3f accuracy with a standard deviation of %0.3f" % (scores.mean(), scores.std()))
 
-
-
-
-
-# predict_train = mlp.predict(X_train)
-# predict_test = mlp.predict(X_test)
-# print(confusion_matrix(y_train,predict_train))
-# print(classification_report(y_train,predict_train))
-
-# #print(scores)
-# clf.score(X_test, y_test)
-# print(features)
-# print (targetVar)
-# result.to_csv(r"D:\Users\radam\Desktop\OPEN-wLabels-train.csv", header=True, index = False)
-# print(df.shape)
-
-# scores = cross_val_score(clf, X, y)
-# print("%0.3f accuracy with a standard deviation of %0.3f" % (scores.mean(), scores.std()))
